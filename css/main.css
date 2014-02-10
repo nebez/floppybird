@@ -52,7 +52,8 @@
 
 *,
 *:before,
-*:after {
+*:after
+{
    -moz-box-sizing: border-box;
    -webkit-box-sizing: border-box;
    box-sizing: border-box;
@@ -62,6 +63,7 @@ html,
 body
 {
    height: 100%;
+   overflow: hidden;
 }
 
 #gamecontainer
@@ -69,7 +71,7 @@ body
    position: relative;
    width: 100%;
    height: 100%;
-   min-height: 505px;
+   min-height: 525px;
 }
 
 /*
@@ -87,7 +89,7 @@ Screen - Game
    position: absolute;
    top: 0;
    width: 100%;
-   height: 83%;
+   height: 80%;
    background-image: url('../assets/sky.png');
    background-repeat: repeat-x;
    background-position: 0px 100%;
@@ -102,8 +104,22 @@ Screen - Game
    position: absolute;
    bottom: 0;
    height: 420px;
+   width: 1500px;
+}
+
+#land
+{
+   position: absolute;
+   bottom: 0;
    width: 100%;
-   max-width: 1500px;
+   height: 20%;
+   background-image: url('../assets/land.png');
+   background-repeat: repeat-x;
+   background-position: 0px 0px;
+   background-color: #ded895;
+   
+   -webkit-animation: animLand 2s linear infinite;
+   animation: animLand 2s linear infinite;
 }
 
 #player
@@ -123,17 +139,21 @@ Screen - Game
    animation: animBird 500ms steps(4) infinite;
 }
 
-#land
+.pipecontainer
 {
    position: absolute;
-   bottom: 0;
-   width: 100%;
-   height: 17%;
-   background-image: url('../assets/land.png');
-   background-repeat: repeat-x;
-   background-position: 0px 0px;
-   background-color: #ded895;
-   
-   -webkit-animation: animLand 2s linear infinite;
-   animation: animLand 2s linear infinite;
+   left: 1300px;
+   width: 52px;
+   height: 100%;
+   background-color: red;
+}
+
+.pipe_upper
+{
+
+}
+
+.pipe_lower
+{
+
 }
