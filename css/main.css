@@ -32,6 +32,24 @@
    100% { background-position: -275px 100%; }
 }
 
+@-webkit-keyframes animBird {
+   from { background-position: 0px 0px; }
+   to { background-position: 0px -96px; }
+}
+@-moz-keyframes animBird {
+   from { background-position: 0px 0px; }
+   to { background-position: 0px -96px; }
+}
+@-o-keyframes animBird {
+   from { background-position: 0px 0px; }
+   to { background-position: 0px -96px; }
+}
+@keyframes animBird {
+   from { background-position: 0px 0px; }
+   to { background-position: 0px -96px; }
+}
+
+
 *,
 *:before,
 *:after {
@@ -85,6 +103,23 @@ Screen - Game
    bottom: 0;
    width: 100%;
    height: 420px;
+}
+
+#player
+{
+   left: 60px;
+   top: 50%;
+}
+
+.bird
+{
+   position: absolute;
+   width: 34px;
+   height: 24px;
+   background-image: url('../assets/bird.png');
+   
+   -webkit-animation: animBird 500ms steps(4) infinite;
+   animation: animBird 500ms steps(4) infinite;
 }
 
 #land
