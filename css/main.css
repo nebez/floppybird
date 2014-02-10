@@ -1,35 +1,35 @@
 @-webkit-keyframes animLand {
    0% { background-position: 0px 0px; }
-   100% { background-position: -100% 0px; }
+   100% { background-position: -335px 0px; }
 }
 @-moz-keyframes animLand {
    0% { background-position: 0px 0px; }
-   100% { background-position: -100% 0px; }
+   100% { background-position: -335px 0px; }
 }
 @-o-keyframes animLand {
    0% { background-position: 0px 0px; }
-   100% { background-position: -100% 0px; }
+   100% { background-position: -335px 0px; }
 }
 @keyframes animLand {
    0% { background-position: 0px 0px; }
-   100% { background-position: -100% 0px; }
+   100% { background-position: -335px 0px; }
 }
 
 @-webkit-keyframes animSky {
    0% { background-position: 0px 100%; }
-   100% { background-position: -100% 100%; }
+   100% { background-position: -275px 100%; }
 }
 @-moz-keyframes animSky {
    0% { background-position: 0px 100%; }
-   100% { background-position: -100% 100%; }
+   100% { background-position: -275px 100%; }
 }
 @-o-keyframes animSky {
    0% { background-position: 0px 100%; }
-   100% { background-position: -100% 100%; }
+   100% { background-position: -275px 100%; }
 }
 @keyframes animSky {
    0% { background-position: 0px 100%; }
-   100% { background-position: -100% 100%; }
+   100% { background-position: -275px 100%; }
 }
 
 *,
@@ -75,8 +75,8 @@ Screen - Game
    background-position: 0px 100%;
    background-color: #4ec0ca;
       
-   animation: animSky 30s linear infinite;
-   -webkit-animation: animSky 30s linear infinite;
+   -webkit-animation: animSky 7s linear infinite;
+   animation: animSky 7s linear infinite;
 }
 
 #flyarea
@@ -98,6 +98,6 @@ Screen - Game
    background-position: 0px 0px;
    background-color: #ded895;
    
-   animation: animLand 11s linear infinite;
-   -webkit-animation: animLand 11s linear infinite;
+   -webkit-animation: animLand 2s linear infinite;
+   animation: animLand 2s linear infinite;
 }
