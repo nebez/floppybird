@@ -1,4 +1,4 @@
-Flappy Bird (HTML5)
+Floppy Bird
 =========
 
-I want to try recreating the flappy bird game in HTML5. Let's see how it goes!
+I want to try recreating the Flappy Bird game in HTML5. Let's see how it goes!

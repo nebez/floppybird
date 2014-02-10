@@ -4,4 +4,38 @@
    -moz-box-sizing: border-box;
    -webkit-box-sizing: border-box;
    box-sizing: border-box;
- }
+}
+
+html,
+body
+{
+   height: 100%;
+}
+
+#gamecontainer
+{
+   position: relative;
+   width: 100%;
+   height: 100%;
+}
+
+/*
+Screen - Game
+*/
+#gamescreen
+{
+   position: absolute;
+   width: 100%;
+   height: 100%;
+   background-color: #4ec0ca;
+}
+
+#land
+{
+   position: absolute;
+   bottom: 0;
+   width: 100%;
+   height: 112px;
+   background-image: url('../assets/land.png');
+   background-repeat: repeat-x;
+}
