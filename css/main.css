@@ -139,21 +139,53 @@ Screen - Game
    animation: animBird 500ms steps(4) infinite;
 }
 
-.pipecontainer
+/* Pipes are 420x high from top to bottom, and there should be 120px inside of them for room to go through */
+.pipe
 {
    position: absolute;
-   left: 1300px;
+   left: 300px;
    width: 52px;
    height: 100%;
-   background-color: red;
 }
 
 .pipe_upper
 {
+   position: absolute;
+   top: 0;
+   height: 150px;
+   width: 52px;
+   background-image: url('../assets/pipe.png');
+   background-repeat: repeat-y;
+   background-position: center;
+}
 
+.pipe_upper:after
+{
+   content: "";
+   position: absolute;
+   bottom: 0;
+   width: 52px;
+   height: 26px;
+   background-image: url('../assets/pipe-down.png');
 }
 
 .pipe_lower
 {
+   position: absolute;
+   bottom: 0;
+   height: 150px;
+   width: 52px;
+   background-image: url('../assets/pipe.png');
+   background-repeat: repeat-y;
+   background-position: center;
+}
 
+.pipe_lower:after
+{
+   content: "";
+   position: absolute;
+   top: 0;
+   width: 52px;
+   height: 26px;
+   background-image: url('../assets/pipe-up.png');
 }
