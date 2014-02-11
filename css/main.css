@@ -50,19 +50,19 @@
 }
 
 @-webkit-keyframes animPipe {
-   0% { left: 1500px; }
+   0% { left: 1200px; }
    100% { left: -100px; }
 }
 @-moz-keyframes animPipe {
-   0% { left: 1500px; }
+   0% { left: 1200px; }
    100% { left: -100px; }
 }
 @-o-keyframes animPipe {
-   0% { left: 1500px; }
+   0% { left: 1200px; }
    100% { left: -100px; }
 }
 @keyframes animPipe {
-   0% { left: 1500px; }
+   0% { left: 1200px; }
    100% { left: -100px; }
 }
 
@@ -169,6 +169,16 @@ Screen - Game
    animation: animLand 1700ms linear infinite;
 }
 
+#borderbox
+{
+   position: absolute;
+   left: 60px;
+   top: 200px;
+   width: 34px;
+   height: 24px;
+   border: 1px solid red;
+}
+
 #player
 {
    left: 60px;
@@ -181,7 +191,6 @@ Screen - Game
    width: 34px;
    height: 24px;
    background-image: url('../assets/bird.png');
-   border: 2px solid blue;
    
    -webkit-animation: animBird 300ms steps(4) infinite;
    animation: animBird 300ms steps(4) infinite;
