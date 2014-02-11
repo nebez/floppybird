@@ -150,8 +150,8 @@ Screen - Game
    background-image: url('../assets/ceiling.png');
    background-repeat: repeat-x;
    
-   -webkit-animation: animCeiling 380ms linear infinite;
-   animation: animCeiling 380ms linear infinite;
+   -webkit-animation: animCeiling 324ms linear infinite;
+   animation: animCeiling 324ms linear infinite;
 }
 
 #land
@@ -165,8 +165,8 @@ Screen - Game
    background-position: 0px 0px;
    background-color: #ded895;
    
-   -webkit-animation: animLand 2s linear infinite;
-   animation: animLand 2s linear infinite;
+   -webkit-animation: animLand 1700ms linear infinite;
+   animation: animLand 1700ms linear infinite;
 }
 
 #player
@@ -181,6 +181,7 @@ Screen - Game
    width: 34px;
    height: 24px;
    background-image: url('../assets/bird.png');
+   border: 2px solid blue;
    
    -webkit-animation: animBird 300ms steps(4) infinite;
    animation: animBird 300ms steps(4) infinite;
@@ -191,12 +192,12 @@ pipe_upper + pipe_lower = 300 px*/
 .pipe
 {
    position: absolute;
-   left: 800px;
+   left: 1600px;
    width: 52px;
    height: 100%;
    
-   -webkit-animation: animPipe 9530ms linear infinite;
-   animation: animPipe 9530ms linear infinite;
+   -webkit-animation: animPipe 8100ms linear;
+   animation: animPipe 8100ms linear;
 }
 
 .pipe_upper

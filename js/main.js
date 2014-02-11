@@ -1,5 +1,5 @@
 var gravity = 0.25;
-var velocity = -5;
+var velocity = -5.5;
 var position = 200;
 var rotation = 0;
 
@@ -10,23 +10,20 @@ $(document).ready(function() {
 
 function mainloop() {
    var player = $("#player");
+   
+   //update the player speed/position
    velocity += gravity;
    position += velocity;
+   
+   //rotation
+   rotation = Math.min((velocity / 10) * 90, 90);
+   
+   player.css({ rotate: rotation });
+   player.css('top', position +'px');
    
    //bounce (for testing)
    if(position > (player.parent().height() - player.height()))
       velocity = -velocity;
-   
-   //rotation
-   //-10 and over should be 15 degrees rotated up
-   //0 should be flat (obviously)
-   //10 and over should be totally face down
-   rotation = (velocity / 10) * 90;
-   if(rotation > 90)
-      rotation = 90;
-   
-   player.css({ rotate: rotation });
-   player.css('top', position +'px');
 }
 
 //Handle space bar
@@ -44,5 +41,9 @@ else
 
 function playerJump()
 {
-   velocity = -6;
+   velocity = -5.5;
 }
+
+setInterval(function() {
+   $("#flyarea").append('<div class="pipe"><div class="pipe_upper" style="height: 170px;"></div><div class="pipe_lower" style="height: 130px;"></div></div>');
+}, 1500);
