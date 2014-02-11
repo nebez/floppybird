@@ -35,7 +35,7 @@ $(document).click(function(e) {
       playerJump();
 });
 
-$('body').keydown(function(e){
+$(document).keydown(function(e){
    //space bar!
    if(e.keyCode == 32)
        playerJump();
