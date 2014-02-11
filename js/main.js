@@ -2,9 +2,16 @@ var gravity = 0.25;
 var velocity = -5.5;
 var position = 180;
 var rotation = 0;
+var debugmode = true;
 var pipes = new Array();
 
 $(document).ready(function() {
+   //debug mode?
+   if(debugmode)
+   {
+      //show the bounding box
+      $("#boundingbox").show();
+   }
    var updaterate = 1000.0 / 60.0 ; //60 times a second
    setInterval(mainloop, updaterate);
    setInterval(updatePipes, 1200);
@@ -20,28 +27,32 @@ function mainloop() {
    //rotation
    rotation = Math.min((velocity / 10) * 90, 90);
    
+   //apply it
    player.css({ rotate: rotation, top: position });
    
-   //finally check for collision
+   //check for collision, create the bounding box
    var box = document.getElementById('player').getBoundingClientRect();
    var origwidth = 34.0;
    var origheight = 24.0;
-   //average out the size a little
-   var newwidth = (origwidth + box.width) / 2;
-   var newheight = (origheight + box.height) / 2;
-   var newleft = ((box.width - newwidth) / 2) + box.left;
-   var newtop = ((box.height - newheight) / 2) + box.top;
-   var degwidth = origwidth - (Math.sin(Math.abs(rotation) / 90) * 4);
-   $("#borderbox").css('left', newleft);
-   $("#borderbox").css('top', newtop);
-   $("#borderbox").css('height', newheight);
-   $("#borderbox").css('width', degwidth);
-   $("#position").text(player.position().top + " - " + player.height());
-   $("#info").text(rotation);
    
-   //bounce (for testing)
-   if(box.bottom >= $("#land").offset().top)
-      velocity = -velocity;
+   var boxwidth = origwidth - (Math.sin(Math.abs(rotation) / 90) * 8);
+   var boxheight = (origheight + box.height) / 2;
+   var boxleft = ((box.width - boxwidth) / 2) + box.left;
+   var boxtop = ((box.height - boxheight) / 2) + box.top;
+   
+   //if we're in debug mode, draw the bounding box
+   if(debugmode)
+   {
+      var boundingbox = $("#boundingbox");
+      boundingbox.css('left', boxleft);
+      boundingbox.css('top', boxtop);
+      boundingbox.css('height', boxheight);
+      boundingbox.css('width', boxwidth);
+      
+      //bounce
+      if(box.bottom >= $("#land").offset().top)
+         velocity = -velocity;
+   }
 }
 
 //Handle space bar

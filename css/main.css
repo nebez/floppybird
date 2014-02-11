@@ -165,15 +165,18 @@ Screen - Game
    background-position: 0px 0px;
    background-color: #ded895;
    
-   -webkit-animation: animLand 1700ms linear infinite;
-   animation: animLand 1700ms linear infinite;
+   -webkit-animation: animLand 2080ms linear infinite;
+   animation: animLand 2080ms linear infinite;
 }
 
-#borderbox
+#boundingbox
 {
    position: absolute;
-   width: 34px;
-   height: 24px;
+   display: none;
+   top: 0;
+   left: 0;
+   width: 0;
+   height: 0;
    border: 1px solid red;
 }
 
