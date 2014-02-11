@@ -5,7 +5,7 @@ var rotation = 0;
 var pipes = new Array();
 
 $(document).ready(function() {
-   var updaterate = 1000.0 / 10.0 ; //60 times a second
+   var updaterate = 1000.0 / 60.0 ; //60 times a second
    setInterval(mainloop, updaterate);
    setInterval(updatePipes, 1200);
 });
@@ -26,6 +26,7 @@ function mainloop() {
    var box = document.getElementById('player').getBoundingClientRect();
    var origwidth = 34;
    var origheight = 24;
+   //thin out the size a little
    console.log(box);
    $("#borderbox").css('left', box.left);
    $("#borderbox").css('top', box.top);
@@ -34,8 +35,9 @@ function mainloop() {
    $("#position").text(player.position().top + " - " + player.height());
    
    //bounce (for testing)
-   if(position > (player.parent().height() - player.height()))
+   if(box.bottom >= $("#land").offset().top)
       velocity = -velocity;
+   console.log($("#land").offset().top);
 }
 
 //Handle space bar

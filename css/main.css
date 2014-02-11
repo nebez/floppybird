@@ -172,8 +172,6 @@ Screen - Game
 #borderbox
 {
    position: absolute;
-   left: 60px;
-   top: 200px;
    width: 34px;
    height: 24px;
    border: 1px solid red;
