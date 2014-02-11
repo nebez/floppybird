@@ -203,7 +203,6 @@ pipe_upper + pipe_lower = 300 px*/
 {
    position: absolute;
    top: 0;
-   height: 170px;
    width: 52px;
    background-image: url('../assets/pipe.png');
    background-repeat: repeat-y;
@@ -224,7 +223,6 @@ pipe_upper + pipe_lower = 300 px*/
 {
    position: absolute;
    bottom: 0;
-   height: 130px;
    width: 52px;
    background-image: url('../assets/pipe.png');
    background-repeat: repeat-y;
