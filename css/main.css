@@ -49,6 +49,23 @@
    to { background-position: 0px -96px; }
 }
 
+@-webkit-keyframes animPipe {
+   0% { left: 1500px; }
+   100% { left: -100px; }
+}
+@-moz-keyframes animPipe {
+   0% { left: 1500px; }
+   100% { left: -100px; }
+}
+@-o-keyframes animPipe {
+   0% { left: 1500px; }
+   100% { left: -100px; }
+}
+@keyframes animPipe {
+   0% { left: 1500px; }
+   100% { left: -100px; }
+}
+
 
 *,
 *:before,
@@ -105,6 +122,7 @@ Screen - Game
    bottom: 0;
    height: 420px;
    width: 1500px;
+   overflow: hidden;
 }
 
 #land
@@ -139,20 +157,24 @@ Screen - Game
    animation: animBird 500ms steps(4) infinite;
 }
 
-/* Pipes are 420x high from top to bottom, and there should be 120px inside of them for room to go through */
+/* Pipes are 420x high from top to bottom, and there should be 120px inside of them for room to go through
+pipe_upper + pipe_lower = 300 px*/
 .pipe
 {
    position: absolute;
-   left: 300px;
+   left: 1300px;
    width: 52px;
    height: 100%;
+   
+   -webkit-animation: animPipe 9530ms linear infinite;
+   animation: animPipe 9530ms linear infinite;
 }
 
 .pipe_upper
 {
    position: absolute;
    top: 0;
-   height: 150px;
+   height: 170px;
    width: 52px;
    background-image: url('../assets/pipe.png');
    background-repeat: repeat-y;
@@ -173,7 +195,7 @@ Screen - Game
 {
    position: absolute;
    bottom: 0;
-   height: 150px;
+   height: 130px;
    width: 52px;
    background-image: url('../assets/pipe.png');
    background-repeat: repeat-y;
