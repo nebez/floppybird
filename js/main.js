@@ -24,20 +24,22 @@ function mainloop() {
    
    //finally check for collision
    var box = document.getElementById('player').getBoundingClientRect();
-   var origwidth = 34;
-   var origheight = 24;
-   //thin out the size a little
-   console.log(box);
-   $("#borderbox").css('left', box.left);
-   $("#borderbox").css('top', box.top);
-   $("#borderbox").css('height', box.height);
-   $("#borderbox").css('width', box.width);
+   var origwidth = 34.0;
+   var origheight = 24.0;
+   //average out the size a little
+   var newwidth = (origwidth + box.width) / 2;
+   var newheight = (origheight + box.height) / 2;
+   var newleft = ((box.width - newwidth) / 2) + box.left;
+   var newtop = ((box.height - newheight) / 2) + box.top;
+   $("#borderbox").css('left', newleft);
+   $("#borderbox").css('top', newtop);
+   $("#borderbox").css('height', newheight);
+   $("#borderbox").css('width', newwidth);
    $("#position").text(player.position().top + " - " + player.height());
    
    //bounce (for testing)
    if(box.bottom >= $("#land").offset().top)
       velocity = -velocity;
-   console.log($("#land").offset().top);
 }
 
 //Handle space bar
