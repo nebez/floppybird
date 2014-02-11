@@ -169,7 +169,7 @@ Screen - Game
    animation: animLand 2080ms linear infinite;
 }
 
-#boundingbox
+.boundingbox
 {
    position: absolute;
    display: none;

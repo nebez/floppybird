@@ -2,6 +2,7 @@ var gravity = 0.25;
 var velocity = -5.5;
 var position = 180;
 var rotation = 0;
+var score = 0;
 var debugmode = true;
 var pipes = new Array();
 
@@ -10,7 +11,7 @@ $(document).ready(function() {
    if(debugmode)
    {
       //show the bounding box
-      $("#boundingbox").show();
+      $(".boundingbox").show();
    }
    var updaterate = 1000.0 / 60.0 ; //60 times a second
    setInterval(mainloop, updaterate);
@@ -39,11 +40,13 @@ function mainloop() {
    var boxheight = (origheight + box.height) / 2;
    var boxleft = ((box.width - boxwidth) / 2) + box.left;
    var boxtop = ((box.height - boxheight) / 2) + box.top;
+   var boxright = boxleft + boxwidth;
+   var boxbottom = boxtop + boxheight;
    
    //if we're in debug mode, draw the bounding box
    if(debugmode)
    {
-      var boundingbox = $("#boundingbox");
+      var boundingbox = $("#playerbox");
       boundingbox.css('left', boxleft);
       boundingbox.css('top', boxtop);
       boundingbox.css('height', boxheight);
@@ -58,24 +61,51 @@ function mainloop() {
    if(pipes[0] == null)
       return;
    
+   //determine the box of the next pipe
    var nextpipe = pipes[0];
    var nextpipeupper = nextpipe.children(".pipe_upper");
-   var pipeupper = nextpipeupper.offset().top + nextpipeupper.height();
-   var pipelower = nextpipe.children(".pipe_lower").offset().top;
-   var pipeleft = pipes[0].position().left;
-   var piperight = pipeleft + pipes[0].width();
    
-   $("#debug").text(pipeupper + " - " + pipelower);
+   var pipetop = nextpipeupper.offset().top + nextpipeupper.height();
+   var pipeleft = nextpipeupper.offset().left - 2; // for some reason it starts at the inner pipes offset, not the outer pipes.
+   var pipewidth = 52;
+   var pipeheight = 120;
+   var piperight = pipeleft + pipewidth;
+   var pipebottom = pipetop + pipeheight;
+   
+   if(debugmode)
+   {
+      //$("#debug").text(pipeupper + " - " + pipelower);
+      var boundingbox = $("#pipebox");
+      boundingbox.css('left', pipeleft);
+      boundingbox.css('top', pipetop);
+      boundingbox.css('height', pipeheight);
+      boundingbox.css('width', pipewidth);
+   }
+   
+   //have we gotten inside the pipe yet?
+   if(boxright > pipeleft)
+   {
+      //we're within the pipe, have we passed through it?
+      if(boxtop > pipetop && boxbottom < pipebottom)
+      {
+         //yeah! we're through.
+         $("#debug").text("");
+      }
+      else
+      {
+         //no! we touched the pipe
+      $("#debug").text("DEAD!");
+      }
+   }
+   
    //have we passed the imminent danger?
-   if(boxleft > pipes[0].position().left + pipes[0].width())
+   if(boxleft > piperight)
    {
       //yes, remove it
       pipes.splice(0, 1);
+      //and maybe add something to our score?!
+      score += 1;
    }
-   
-   //have we collided?
-   
-
 }
 
 //Handle space bar
