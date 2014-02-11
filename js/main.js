@@ -29,7 +29,7 @@ function mainloop() {
    player.css('top', position +'px');
 }
 
-$(document).click(function(e) { 
+$(document).mousedown(function(e) { 
    //click?
    if (e.button == 0)
       playerJump();
