@@ -14,7 +14,7 @@ $(document).ready(function() {
    }
    var updaterate = 1000.0 / 60.0 ; //60 times a second
    setInterval(mainloop, updaterate);
-   setInterval(updatePipes, 1200);
+   setInterval(updatePipes, 1350);
 });
 
 function mainloop() {
@@ -30,7 +30,7 @@ function mainloop() {
    //apply it
    player.css({ rotate: rotation, top: position });
    
-   //check for collision, create the bounding box
+   //create the bounding box
    var box = document.getElementById('player').getBoundingClientRect();
    var origwidth = 34.0;
    var origheight = 24.0;
@@ -53,6 +53,29 @@ function mainloop() {
       if(box.bottom >= $("#land").offset().top)
          velocity = -velocity;
    }
+   
+   //we can't go any further without a pipe
+   if(pipes[0] == null)
+      return;
+   
+   var nextpipe = pipes[0];
+   var nextpipeupper = nextpipe.children(".pipe_upper");
+   var pipeupper = nextpipeupper.offset().top + nextpipeupper.height();
+   var pipelower = nextpipe.children(".pipe_lower").offset().top;
+   var pipeleft = pipes[0].position().left;
+   var piperight = pipeleft + pipes[0].width();
+   
+   $("#debug").text(pipeupper + " - " + pipelower);
+   //have we passed the imminent danger?
+   if(boxleft > pipes[0].position().left + pipes[0].width())
+   {
+      //yes, remove it
+      pipes.splice(0, 1);
+   }
+   
+   //have we collided?
+   
+
 }
 
 //Handle space bar
@@ -75,15 +98,13 @@ function playerJump()
 
 function updatePipes()
 {
-   //Does the first pipe need removal?
-   if(pipes[0] != null && pipes[0].position().left <= -100)
-   {
-      //Yes! remove the dom element and remove it from the array, too
-      pipes[0].remove();
-      pipes.splice(0, 1);
-   }
-   //add a new pipe
-   var newpipe = $('<div class="pipe"><div class="pipe_upper" style="height: 170px;"></div><div class="pipe_lower" style="height: 130px;"></div></div>');
+   //Do any pipes need removal?
+   $(".pipe").filter(function() { return $(this).position().left <= -100; }).remove()
+   
+   //add a new pipe (top height + bottom height == 300) and put it in our tracker
+   var topheight = Math.floor((Math.random()*150) + 75); //generate random int between 75 - 225
+   var bottomheight = 300 - topheight;
+   var newpipe = $('<div class="pipe"><div class="pipe_upper" style="height: ' + topheight + 'px;"></div><div class="pipe_lower" style="height: ' + bottomheight + 'px;"></div></div>');
    $("#flyarea").append(newpipe);
    pipes.push(newpipe);
 }
