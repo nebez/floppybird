@@ -6,6 +6,7 @@ var rotation = 0;
 $(document).ready(function() {
    var updaterate = 1000.0 / 60.0 ; //60 times a second
    setInterval(mainloop, updaterate);
+   setInterval(updatePipes, 1200);
 });
 
 function mainloop() {
@@ -44,6 +45,8 @@ function playerJump()
    velocity = -5.5;
 }
 
-setInterval(function() {
+function updatePipes()
+{
+   //Does the first pipe need removal?
    $("#flyarea").append('<div class="pipe"><div class="pipe_upper" style="height: 170px;"></div><div class="pipe_lower" style="height: 130px;"></div></div>');
-}, 1500);
+}

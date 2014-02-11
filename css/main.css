@@ -192,7 +192,7 @@ pipe_upper + pipe_lower = 300 px*/
 .pipe
 {
    position: absolute;
-   left: 1600px;
+   left: -100px;
    width: 52px;
    height: 100%;
    
