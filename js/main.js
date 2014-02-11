@@ -1,6 +1,6 @@
 var gravity = 0.25;
 var velocity = -5.5;
-var position = 200;
+var position = 180;
 var rotation = 0;
 var pipes = new Array();
 
@@ -31,11 +31,13 @@ function mainloop() {
    var newheight = (origheight + box.height) / 2;
    var newleft = ((box.width - newwidth) / 2) + box.left;
    var newtop = ((box.height - newheight) / 2) + box.top;
+   var degwidth = origwidth - (Math.sin(Math.abs(rotation) / 90) * 4);
    $("#borderbox").css('left', newleft);
    $("#borderbox").css('top', newtop);
    $("#borderbox").css('height', newheight);
-   $("#borderbox").css('width', newwidth);
+   $("#borderbox").css('width', degwidth);
    $("#position").text(player.position().top + " - " + player.height());
+   $("#info").text(rotation);
    
    //bounce (for testing)
    if(box.bottom >= $("#land").offset().top)

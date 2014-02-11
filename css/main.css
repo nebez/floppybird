@@ -150,8 +150,8 @@ Screen - Game
    background-image: url('../assets/ceiling.png');
    background-repeat: repeat-x;
    
-   -webkit-animation: animCeiling 324ms linear infinite;
-   animation: animCeiling 324ms linear infinite;
+   -webkit-animation: animCeiling 398ms linear infinite;
+   animation: animCeiling 398ms linear infinite;
 }
 
 #land
