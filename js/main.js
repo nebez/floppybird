@@ -29,17 +29,18 @@ function mainloop() {
    player.css('top', position +'px');
 }
 
-$(document).mousedown(function(e) { 
-   //click?
-   if (e.button == 0)
-      playerJump();
-});
-
+//Handle space bar
 $(document).keydown(function(e){
    //space bar!
    if(e.keyCode == 32)
        playerJump();
 });
+
+//Handle mouse down OR touch start
+if("ontouchstart" in window)
+   $(document).on("touchstart", playerJump);
+else
+   $(document).on("mousedown", playerJump);
 
 function playerJump()
 {
