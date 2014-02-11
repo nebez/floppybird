@@ -66,6 +66,23 @@
    100% { left: -100px; }
 }
 
+@-webkit-keyframes animCeiling {
+   0% { background-position: 0px 0px; }
+   100% { background-position: -63px 0px; }
+}
+@-moz-keyframes animCeiling {
+   0% { background-position: 0px 0px; }
+   100% { background-position: -63px 0px; }
+}
+@-o-keyframes animCeiling {
+   0% { background-position: 0px 0px; }
+   100% { background-position: -63px 0px; }
+}
+@keyframes animCeiling {
+   0% { background-position: 0px 0px; }
+   100% { background-position: -63px 0px; }
+}
+
 
 *,
 *:before,
@@ -121,8 +138,20 @@ Screen - Game
    position: absolute;
    bottom: 0;
    height: 420px;
-   width: 1500px;
-   overflow: hidden;
+   width: 100%;
+}
+
+#ceiling
+{
+   position: absolute;
+   top: -16px;
+   height: 16px;
+   width: 100%;
+   background-image: url('../assets/ceiling.png');
+   background-repeat: repeat-x;
+   
+   -webkit-animation: animCeiling 380ms linear infinite;
+   animation: animCeiling 380ms linear infinite;
 }
 
 #land
@@ -153,8 +182,8 @@ Screen - Game
    height: 24px;
    background-image: url('../assets/bird.png');
    
-   -webkit-animation: animBird 500ms steps(4) infinite;
-   animation: animBird 500ms steps(4) infinite;
+   -webkit-animation: animBird 300ms steps(4) infinite;
+   animation: animBird 300ms steps(4) infinite;
 }
 
 /* Pipes are 420x high from top to bottom, and there should be 120px inside of them for room to go through
@@ -162,7 +191,7 @@ pipe_upper + pipe_lower = 300 px*/
 .pipe
 {
    position: absolute;
-   left: 1300px;
+   left: 800px;
    width: 52px;
    height: 100%;
    
