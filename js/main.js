@@ -233,7 +233,13 @@ function gameloop() {
 $(document).keydown(function(e){
    //space bar!
    if(e.keyCode == 32)
-       screenClick();
+   {
+      //in ScoreScreen, hitting space should click the "replay" button. else it's just a regular spacebar hit
+      if(currentstate == states.ScoreScreen)
+         $("#replay").click();
+      else
+         screenClick();
+   }
 });
 
 //Handle mouse down OR touch start
