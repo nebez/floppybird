@@ -21,6 +21,8 @@ var pipeheight = 90;
 var pipewidth = 52;
 var pipes = new Array();
 
+var replayclickable = false;
+
 //sounds
 var volume = 30;
 var soundJump = new buzz.sound("assets/sounds/sfx_wing.ogg");
@@ -348,6 +350,7 @@ function playerDead()
 
 function showScore()
 {
+   console.log("showScore");
    //unhide us
    $("#scoreboard").css("display", "block");
    
@@ -388,9 +391,17 @@ function showScore()
          $("#medal").transition({ opacity: 1, scale: 1 }, 600, 'ease');
       }
    });
+   
+   //make the replay button clickable
+   replayclickable = true;
 }
 
 $("#replay").click(function() {
+   //make sure we can only click once
+   if(!replayclickable)
+      return;
+   else
+      replayclickable = false;
    //SWOOSH!
    soundSwoosh.stop();
    soundSwoosh.play();
