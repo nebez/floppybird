@@ -208,6 +208,7 @@ Screen - Game
 #scoreboard
 {
    position: absolute;
+   display: none;
    opacity: 0;
    top: 64px;
    left: 43px;
@@ -222,6 +223,7 @@ Screen - Game
 #medal
 {
    position: absolute;
+   opacity: 0;
    top: 114px;
    left: 32px;
    width: 44px;
@@ -256,6 +258,17 @@ Screen - Game
 #highscore img
 {
    padding-left: 2px;
+}
+
+#replay
+{
+   position: absolute;
+   opacity: 0;
+   top: 205px;
+   left: 61px;
+   height: 115px;
+   width: 70px;
+   cursor: pointer;
 }
 
 .boundingbox

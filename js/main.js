@@ -1,4 +1,4 @@
-var debugmode = true;
+var debugmode = false;
 
 var states = Object.freeze({
    SplashScreen: 0,
@@ -35,19 +35,58 @@ var loopGameloop;
 var loopPipeloop;
 
 $(document).ready(function() {
+   if(window.location.search == "?debug")
+      debugmode = true;
+   
+   //get the highscore
+   var savedscore = getCookie("highscore");
+   if(savedscore != "")
+      highscore = parseInt(savedscore);
+   
    //start with the splash screen
    showSplash();
 });
 
+function getCookie(cname)
+{
+   var name = cname + "=";
+   var ca = document.cookie.split(';');
+   for(var i=0; i<ca.length; i++) 
+   {
+      var c = ca[i].trim();
+      if (c.indexOf(name)==0) return c.substring(name.length,c.length);
+   }
+   return "";
+}
+
+function setCookie(cname,cvalue,exdays)
+{
+   var d = new Date();
+   d.setTime(d.getTime()+(exdays*24*60*60*1000));
+   var expires = "expires="+d.toGMTString();
+   document.cookie = cname + "=" + cvalue + "; " + expires;
+}
+
 function showSplash()
 {
    currentstate = states.SplashScreen;
+   
+   //set the defaults (again)
+   velocity = 0;
+   position = 180;
+   rotation = 0;
+   score = 0;
+   
+   //update the player in preparation for the next game
+   $("#player").css({ y: 0, x: 0});
+   updatePlayer($("#player"));
    
    soundSwoosh.stop();
    soundSwoosh.play();
    
    //clear out all the pipes if there are any
    $(".pipe").remove();
+   pipes = new Array();
    
    //make everything animated again
    $(".animated").css('animation-play-state', 'running');
@@ -66,7 +105,6 @@ function startGame()
    $("#splash").transition({ opacity: 0 }, 500, 'ease');
    
    //update the big score
-   score = 0;
    setBigScore();
    
    //debug mode?
@@ -85,6 +123,15 @@ function startGame()
    playerJump();
 }
 
+function updatePlayer(player)
+{
+   //rotation
+   rotation = Math.min((velocity / 10) * 90, 90);
+   
+   //apply rotation and position
+   $(player).css({ rotate: rotation, top: position });
+}
+
 function gameloop() {
    var player = $("#player");
    
@@ -92,11 +139,8 @@ function gameloop() {
    velocity += gravity;
    position += velocity;
    
-   //rotation
-   rotation = Math.min((velocity / 10) * 90, 90);
-   
-   //apply it
-   player.css({ rotate: rotation, top: position });
+   //update the player
+   updatePlayer(player);
    
    //create the bounding box
    var box = document.getElementById('player').getBoundingClientRect();
@@ -118,19 +162,13 @@ function gameloop() {
       boundingbox.css('top', boxtop);
       boundingbox.css('height', boxheight);
       boundingbox.css('width', boxwidth);
-      
-      //bounce in debug mode
-      if(box.bottom + velocity >= $("#land").offset().top)
-         velocity = -velocity;
    }
-   else
+   
+   //did we hit the ground?
+   if(box.bottom >= $("#land").offset().top)
    {
-      //there's no bouncing in regular mode brah
-      if(box.bottom >= $("#land").offset().top)
-      {
-         playerDead();
-         return;
-      }
+      playerDead();
+      return;
    }
    
    //have they tried to escape through the ceiling? :o
@@ -181,8 +219,6 @@ function gameloop() {
    //have we passed the imminent danger?
    if(boxleft > piperight)
    {
-      console.log(boxleft);
-      console.log(piperight);
       //yes, remove it
       pipes.splice(0, 1);
       
@@ -224,18 +260,61 @@ function playerJump()
    soundJump.play();
 }
 
-function setBigScore(num)
+function setBigScore(erase)
 {
    var elemscore = $("#bigscore");
    elemscore.empty();
    
-   if(num == -1)
-      //calling setBigScore with -1 will just clear the score
+   if(erase)
       return;
    
    var digits = score.toString().split('');
    for(var i = 0; i < digits.length; i++)
       elemscore.append("<img src='assets/font_big_" + digits[i] + ".png' alt='" + digits[i] + "'>");
+}
+
+function setSmallScore()
+{
+   var elemscore = $("#currentscore");
+   elemscore.empty();
+   
+   var digits = score.toString().split('');
+   for(var i = 0; i < digits.length; i++)
+      elemscore.append("<img src='assets/font_small_" + digits[i] + ".png' alt='" + digits[i] + "'>");
+}
+
+function setHighScore()
+{
+   var elemscore = $("#highscore");
+   elemscore.empty();
+   
+   var digits = highscore.toString().split('');
+   for(var i = 0; i < digits.length; i++)
+      elemscore.append("<img src='assets/font_small_" + digits[i] + ".png' alt='" + digits[i] + "'>");
+}
+
+function setMedal()
+{
+   var elemmedal = $("#medal");
+   elemmedal.empty();
+   
+   if(score < 10)
+      //signal that no medal has been won
+      return false;
+   
+   if(score >= 10)
+      medal = "bronze";
+   if(score >= 20)
+      medal = "silver";
+   if(score >= 30)
+      medal = "gold";
+   if(score >= 40)
+      medal = "platinum";
+   
+   elemmedal.append('<img src="assets/medal_' + medal +'.png" alt="' + medal +'">');
+   
+   //signal that a medal has been won
+   return true;
 }
 
 function playerDead()
@@ -248,7 +327,7 @@ function playerDead()
    var playerbottom = $("#player").position().top + $("#player").width(); //we use width because he'll be rotated 90 deg
    var floor = $("#flyarea").height();
    var movey = Math.max(0, floor - playerbottom);
-   $("#player").transition({ x: movey + 'px', rotate: 90}, 1000, 'easeInOutCubic');
+   $("#player").transition({ y: movey + 'px', rotate: 90}, 1000, 'easeInOutCubic');
    
    //it's time to change states. as of now we're considered ScoreScreen to disable left click/flying
    currentstate = states.ScoreScreen;
@@ -256,10 +335,12 @@ function playerDead()
    //destroy our gameloops
    clearInterval(loopGameloop);
    clearInterval(loopPipeloop);
+   loopGameloop = null;
+   loopPipeloop = null;
    
    //play the hit sound (then the dead sound) and then show score
-   soundHit.play().bind("ended", function() {
-      soundDie.play().bind("ended", function() {
+   soundHit.play().bindOnce("ended", function() {
+      soundDie.play().bindOnce("ended", function() {
          showScore();
       });
    });
@@ -267,24 +348,62 @@ function playerDead()
 
 function showScore()
 {
+   //unhide us
+   $("#scoreboard").css("display", "block");
+   
    //remove the big score
-   setBigScore(-1);
+   setBigScore(true);
    
    //have they beaten their high score?
    if(score > highscore)
    {
       //yeah!
       highscore = score;
+      //save it!
+      setCookie("highscore", highscore, 999);
    }
+   
+   //update the scoreboard
+   setSmallScore();
+   setHighScore();
+   var wonmedal = setMedal();
    
    //SWOOSH!
    soundSwoosh.stop();
    soundSwoosh.play();
    
-   //show the scores!
-   $("#scoreboard").css({ y: '40px' }); //move it down so we can slide it up
-   $("#scoreboard").transition({ y: '0px', opacity: 1}, 500, 'ease');
+   //show the scoreboard
+   $("#scoreboard").css({ y: '40px', opacity: 0 }); //move it down so we can slide it up
+   $("#replay").css({ y: '40px', opacity: 0 });
+   $("#scoreboard").transition({ y: '0px', opacity: 1}, 600, 'ease', function() {
+      //When the animation is done, animate in the replay button and SWOOSH!
+      soundSwoosh.stop();
+      soundSwoosh.play();
+      $("#replay").transition({ y: '0px', opacity: 1}, 600, 'ease');
+      
+      //also animate in the MEDAL! WOO!
+      if(wonmedal)
+      {
+         $("#medal").css({ scale: 1.5 });
+         $("#medal").transition({ opacity: 1, scale: 1 }, 600, 'ease');
+      }
+   });
 }
+
+$("#replay").click(function() {
+   //SWOOSH!
+   soundSwoosh.stop();
+   soundSwoosh.play();
+   
+   //fade out the scoreboard
+   $("#scoreboard").transition({ y: '-40px', opacity: 0}, 1000, 'ease', function() {
+      //when that's done, display us back to nothing
+      $("#scoreboard").css("display", "none");
+      
+      //start the game over!
+      showSplash();
+   });
+});
 
 function playerScore()
 {
