@@ -1,10 +1,22 @@
+var debugmode = true;
+
 var gravity = 0.25;
 var velocity = -5.5;
 var position = 180;
 var rotation = 0;
+var jump = -4.6;
+
 var score = 0;
-var debugmode = true;
+
+var pipeheight = 90;
+var pipewidth = 52;
 var pipes = new Array();
+
+//sounds
+var volume = 5;
+var soundJump = new buzz.sound("assets/sounds/sfx_wing.ogg");
+var soundScore = new buzz.sound("assets/sounds/sfx_point.ogg");
+buzz.all().setVolume(volume);
 
 $(document).ready(function() {
    //debug mode?
@@ -53,7 +65,7 @@ function mainloop() {
       boundingbox.css('width', boxwidth);
       
       //bounce
-      if(box.bottom >= $("#land").offset().top)
+      if(box.bottom + velocity >= $("#land").offset().top)
          velocity = -velocity;
    }
    
@@ -61,14 +73,12 @@ function mainloop() {
    if(pipes[0] == null)
       return;
    
-   //determine the box of the next pipe
+   //determine the bounding box of the next pipes inner area
    var nextpipe = pipes[0];
    var nextpipeupper = nextpipe.children(".pipe_upper");
    
    var pipetop = nextpipeupper.offset().top + nextpipeupper.height();
    var pipeleft = nextpipeupper.offset().left - 2; // for some reason it starts at the inner pipes offset, not the outer pipes.
-   var pipewidth = 52;
-   var pipeheight = 120;
    var piperight = pipeleft + pipewidth;
    var pipebottom = pipetop + pipeheight;
    
@@ -85,27 +95,30 @@ function mainloop() {
    //have we gotten inside the pipe yet?
    if(boxright > pipeleft)
    {
-      //we're within the pipe, have we passed through it?
+      //we're within the pipe, have we passed between upper and lower pipes?
       if(boxtop > pipetop && boxbottom < pipebottom)
       {
-         //yeah! we're through.
-         $("#debug").text("");
+         //yeah! we're within bounds
+         
       }
       else
       {
          //no! we touched the pipe
-      $("#debug").text("DEAD!");
+         playerDead();
       }
    }
+   
    
    //have we passed the imminent danger?
    if(boxleft > piperight)
    {
       //yes, remove it
       pipes.splice(0, 1);
-      //and maybe add something to our score?!
-      score += 1;
+      
+      //and score a point
+      playerScore();
    }
+   $("#debug").text(score);
 }
 
 //Handle space bar
@@ -123,7 +136,23 @@ else
 
 function playerJump()
 {
-   velocity = -5.5;
+   velocity = jump;
+   //play jump sound
+   soundJump.stop();
+   soundJump.play();
+}
+
+function playerDead()
+{
+
+}
+
+function playerScore()
+{
+   score += 1;
+   //play score sound
+   soundScore.stop();
+   soundScore.play();
 }
 
 function updatePipes()
@@ -131,9 +160,9 @@ function updatePipes()
    //Do any pipes need removal?
    $(".pipe").filter(function() { return $(this).position().left <= -100; }).remove()
    
-   //add a new pipe (top height + bottom height == 300) and put it in our tracker
-   var topheight = Math.floor((Math.random()*150) + 75); //generate random int between 75 - 225
-   var bottomheight = 300 - topheight;
+   //add a new pipe (top height + bottom height == 330) and put it in our tracker
+   var topheight = Math.floor((Math.random()*170) + 80); //generate random int between 80 - 250
+   var bottomheight = 330 - topheight;
    var newpipe = $('<div class="pipe"><div class="pipe_upper" style="height: ' + topheight + 'px;"></div><div class="pipe_lower" style="height: ' + bottomheight + 'px;"></div></div>');
    $("#flyarea").append(newpipe);
    pipes.push(newpipe);

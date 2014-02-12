@@ -50,19 +50,19 @@
 }
 
 @-webkit-keyframes animPipe {
-   0% { left: 1200px; }
+   0% { left: 900px; }
    100% { left: -100px; }
 }
 @-moz-keyframes animPipe {
-   0% { left: 1200px; }
+   0% { left: 900px; }
    100% { left: -100px; }
 }
 @-o-keyframes animPipe {
-   0% { left: 1200px; }
+   0% { left: 900px; }
    100% { left: -100px; }
 }
 @keyframes animPipe {
-   0% { left: 1200px; }
+   0% { left: 900px; }
    100% { left: -100px; }
 }
 
@@ -150,8 +150,8 @@ Screen - Game
    background-image: url('../assets/ceiling.png');
    background-repeat: repeat-x;
    
-   -webkit-animation: animCeiling 398ms linear infinite;
-   animation: animCeiling 398ms linear infinite;
+   -webkit-animation: animCeiling 481ms linear infinite;
+   animation: animCeiling 481ms linear infinite;
 }
 
 #land
@@ -165,8 +165,8 @@ Screen - Game
    background-position: 0px 0px;
    background-color: #ded895;
    
-   -webkit-animation: animLand 2080ms linear infinite;
-   animation: animLand 2080ms linear infinite;
+   -webkit-animation: animLand 2516ms linear infinite;
+   animation: animLand 2516ms linear infinite;
 }
 
 .boundingbox
@@ -206,8 +206,8 @@ pipe_upper + pipe_lower = 300 px*/
    width: 52px;
    height: 100%;
    
-   -webkit-animation: animPipe 8100ms linear;
-   animation: animPipe 8100ms linear;
+   -webkit-animation: animPipe 7500ms linear;
+   animation: animPipe 7500ms linear;
 }
 
 .pipe_upper
