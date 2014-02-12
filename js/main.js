@@ -401,8 +401,8 @@ function showScore()
       //also animate in the MEDAL! WOO!
       if(wonmedal)
       {
-         $("#medal").css({ scale: 1.5 });
-         $("#medal").transition({ opacity: 1, scale: 1 }, 600, 'ease');
+         $("#medal").css({ scale: 2, opacity: 0 });
+         $("#medal").transition({ opacity: 1, scale: 1 }, 1200, 'ease');
       }
    });
    
