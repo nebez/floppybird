@@ -17,7 +17,7 @@ var jump = -4.6;
 var score = 0;
 var highscore = 0;
 
-var pipeheight = 90;
+var pipeheight = 100;
 var pipewidth = 52;
 var pipes = new Array();
 
@@ -446,7 +446,7 @@ function updatePipes()
    
    //add a new pipe (top height + bottom height == 330) and put it in our tracker
    var topheight = Math.floor((Math.random()*170) + 80); //generate random int between 80 - 250
-   var bottomheight = 330 - topheight;
+   var bottomheight = (420 - pipeheight) - topheight;
    var newpipe = $('<div class="pipe animated"><div class="pipe_upper" style="height: ' + topheight + 'px;"></div><div class="pipe_lower" style="height: ' + bottomheight + 'px;"></div></div>');
    $("#flyarea").append(newpipe);
    pipes.push(newpipe);
