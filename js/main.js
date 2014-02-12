@@ -339,21 +339,26 @@ function playerDead()
    clearInterval(loopPipeloop);
    loopGameloop = null;
    loopPipeloop = null;
-   
-   console.log("showScore 1");
-   
-   //play the hit sound (then the dead sound) and then show score
-   soundHit.play().bindOnce("ended", function() {
-      soundDie.play().bindOnce("ended", function() {
-         console.log("showScore 2");
-         showScore();
+
+   //mobile browsers don't support buzz bindOnce event
+   if(isMobile.any())
+   {
+      //skip right to showing score
+      showScore();
+   }
+   else
+   {
+      //play the hit sound (then the dead sound) and then show score
+      soundHit.play().bindOnce("ended", function() {
+         soundDie.play().bindOnce("ended", function() {
+            showScore();
+         });
       });
-   });
+   }
 }
 
 function showScore()
 {
-   console.log("showScore");
    //unhide us
    $("#scoreboard").css("display", "block");
    
@@ -440,3 +445,24 @@ function updatePipes()
    $("#flyarea").append(newpipe);
    pipes.push(newpipe);
 }
+
+var isMobile = {
+   Android: function() {
+   return navigator.userAgent.match(/Android/i);
+   },
+   BlackBerry: function() {
+   return navigator.userAgent.match(/BlackBerry/i);
+   },
+   iOS: function() {
+   return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+   },
+   Opera: function() {
+   return navigator.userAgent.match(/Opera Mini/i);
+   },
+   Windows: function() {
+   return navigator.userAgent.match(/IEMobile/i);
+   },
+   any: function() {
+   return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+   }
+};
