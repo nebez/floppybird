@@ -340,9 +340,12 @@ function playerDead()
    loopGameloop = null;
    loopPipeloop = null;
    
+   console.log("showScore 1");
+   
    //play the hit sound (then the dead sound) and then show score
    soundHit.play().bindOnce("ended", function() {
       soundDie.play().bindOnce("ended", function() {
+         console.log("showScore 2");
          showScore();
       });
    });
