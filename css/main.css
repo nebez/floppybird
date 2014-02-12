@@ -91,6 +91,7 @@
    -moz-box-sizing: border-box;
    -webkit-box-sizing: border-box;
    box-sizing: border-box;
+   -webkit-transition: translate3d(0,0,0);
 }
 
 html,
@@ -128,7 +129,7 @@ Screen - Game
    background-repeat: repeat-x;
    background-position: 0px 100%;
    background-color: #4ec0ca;
-      
+   
    -webkit-animation: animSky 7s linear infinite;
    animation: animSky 7s linear infinite;
 }
@@ -183,6 +184,18 @@ Screen - Game
    padding: 1px;
 }
 
+#splash
+{
+   position: absolute;
+   opacity: 0;
+   top: 75px;
+   left: 65px;
+   width: 188px;
+   height: 170px;
+   background-image: url('../assets/splash.png');
+   background-repeat: no-repeat;
+}
+
 .boundingbox
 {
    position: absolute;
@@ -211,8 +224,6 @@ Screen - Game
    animation: animBird 300ms steps(4) infinite;
 }
 
-/* Pipes are 420x high from top to bottom, and there should be 120px inside of them for room to go through
-pipe_upper + pipe_lower = 300 px*/
 .pipe
 {
    position: absolute;
