@@ -169,6 +169,20 @@ Screen - Game
    animation: animLand 2516ms linear infinite;
 }
 
+#bigscore
+{
+   position: absolute;
+   top: 20px;
+   left: 150px;
+   z-index: 100;
+}
+
+#bigscore img
+{
+   display: inline-block;
+   padding: 1px;
+}
+
 .boundingbox
 {
    position: absolute;
@@ -205,6 +219,7 @@ pipe_upper + pipe_lower = 300 px*/
    left: -100px;
    width: 52px;
    height: 100%;
+   z-index: 10;
    
    -webkit-animation: animPipe 7500ms linear;
    animation: animPipe 7500ms linear;

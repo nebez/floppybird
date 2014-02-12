@@ -33,6 +33,8 @@ var loopMainloop;
 var loopPipeloop;
 
 $(document).ready(function() {
+   //update the big score
+   setBigScore();
    currentstate = states.GameScreen;
    //debug mode?
    if(debugmode)
@@ -164,6 +166,16 @@ function playerJump()
    }
 }
 
+function setBigScore(num)
+{
+   var elemscore = $("#bigscore");
+   elemscore.empty();
+   
+   var digits = score.toString().split('');
+   for(var i = 0; i < digits.length; i++)
+      elemscore.append("<img src='assets/font_big_" + digits[i] + ".png' alt='" + digits[i] + "'>");
+}
+
 function playerDead()
 {
    //end the game!
@@ -192,6 +204,7 @@ function playerScore()
    //play score sound
    soundScore.stop();
    soundScore.play();
+   setBigScore();
 }
 
 function updatePipes()
