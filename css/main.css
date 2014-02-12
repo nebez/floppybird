@@ -88,10 +88,19 @@
 *:before,
 *:after
 {
+   /* border box */
    -moz-box-sizing: border-box;
    -webkit-box-sizing: border-box;
    box-sizing: border-box;
+   /* gpu acceleration */
    -webkit-transition: translate3d(0,0,0);
+   /* select disable */
+   -webkit-touch-callout: none;
+   -webkit-user-select: none;
+   -khtml-user-select: none;
+   -moz-user-select: none;
+   -ms-user-select: none;
+   user-select: none;
 }
 
 html,
@@ -194,6 +203,59 @@ Screen - Game
    height: 170px;
    background-image: url('../assets/splash.png');
    background-repeat: no-repeat;
+}
+
+#scoreboard
+{
+   position: absolute;
+   opacity: 0;
+   top: 64px;
+   left: 43px;
+   width: 236px;
+   height: 280px;
+   background-image: url('../assets/scoreboard.png');
+   background-repeat: no-repeat;
+   
+   z-index: 1000;
+}
+
+#medal
+{
+   position: absolute;
+   top: 114px;
+   left: 32px;
+   width: 44px;
+   height: 44px;
+}
+
+#currentscore
+{
+   position: absolute;
+   top: 105px;
+   left: 107px;
+   width: 104px;
+   height: 14px;
+   text-align: right;
+}
+
+#currentscore img
+{
+   padding-left: 2px;
+}
+
+#highscore
+{
+   position: absolute;
+   top: 147px;
+   left: 107px;
+   width: 104px;
+   height: 14px;
+   text-align: right;
+}
+
+#highscore img
+{
+   padding-left: 2px;
 }
 
 .boundingbox

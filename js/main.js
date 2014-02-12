@@ -35,6 +35,7 @@ var loopGameloop;
 var loopPipeloop;
 
 $(document).ready(function() {
+   //start with the splash screen
    showSplash();
 });
 
@@ -249,22 +250,40 @@ function playerDead()
    var movey = Math.max(0, floor - playerbottom);
    $("#player").transition({ x: movey + 'px', rotate: 90}, 1000, 'easeInOutCubic');
    
-   //play the hit sound (then the dead sound)
-   soundHit.play().bind("ended", function() { soundDie.play(); } );
-   
-   showScore();
-}
-
-function showScore()
-{
+   //it's time to change states. as of now we're considered ScoreScreen to disable left click/flying
    currentstate = states.ScoreScreen;
-   
+
    //destroy our gameloops
    clearInterval(loopGameloop);
    clearInterval(loopPipeloop);
    
+   //play the hit sound (then the dead sound) and then show score
+   soundHit.play().bind("ended", function() {
+      soundDie.play().bind("ended", function() {
+         showScore();
+      });
+   });
+}
+
+function showScore()
+{
    //remove the big score
    setBigScore(-1);
+   
+   //have they beaten their high score?
+   if(score > highscore)
+   {
+      //yeah!
+      highscore = score;
+   }
+   
+   //SWOOSH!
+   soundSwoosh.stop();
+   soundSwoosh.play();
+   
+   //show the scores!
+   $("#scoreboard").css({ y: '40px' }); //move it down so we can slide it up
+   $("#scoreboard").transition({ y: '0px', opacity: 1}, 500, 'ease');
 }
 
 function playerScore()
