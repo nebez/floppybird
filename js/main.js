@@ -347,7 +347,7 @@ function playerDead()
    loopPipeloop = null;
 
    //mobile browsers don't support buzz bindOnce event
-   if(isMobile.any())
+   if(isIncompatible.any())
    {
       //skip right to showing score
       showScore();
@@ -454,7 +454,7 @@ function updatePipes()
    pipes.push(newpipe);
 }
 
-var isMobile = {
+var isIncompatible = {
    Android: function() {
    return navigator.userAgent.match(/Android/i);
    },
@@ -467,10 +467,13 @@ var isMobile = {
    Opera: function() {
    return navigator.userAgent.match(/Opera Mini/i);
    },
+   Safari: function() {
+   return (navigator.userAgent.match(/OS X.*Safari/) && ! navigator.userAgent.match(/Chrome/));
+   },
    Windows: function() {
    return navigator.userAgent.match(/IEMobile/i);
    },
    any: function() {
-   return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+   return (isIncompatible.Android() || isIncompatible.BlackBerry() || isIncompatible.iOS() || isIncompatible.Opera() || isIncompatible.Safari() || isIncompatible.Windows());
    }
 };
