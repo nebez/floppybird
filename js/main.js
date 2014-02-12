@@ -56,6 +56,8 @@ var loopPipeloop;
 $(document).ready(function() {
    if(window.location.search == "?debug")
       debugmode = true;
+   if(window.location.search == "?easy")
+      pipeheight = 200;
    
    //get the highscore
    var savedscore = getCookie("highscore");
