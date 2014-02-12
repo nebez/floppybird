@@ -1,5 +1,13 @@
 var debugmode = true;
 
+var states = Object.freeze({
+   SplashScreen: 0,
+   GameScreen: 1,
+   ScoreScreen: 2
+});
+
+var currentstate;
+
 var gravity = 0.25;
 var velocity = -5.5;
 var position = 180;
@@ -13,12 +21,19 @@ var pipewidth = 52;
 var pipes = new Array();
 
 //sounds
-var volume = 5;
+var volume = 30;
 var soundJump = new buzz.sound("assets/sounds/sfx_wing.ogg");
 var soundScore = new buzz.sound("assets/sounds/sfx_point.ogg");
+var soundHit = new buzz.sound("assets/sounds/sfx_hit.ogg");
+var soundDie = new buzz.sound("assets/sounds/sfx_die.ogg");
 buzz.all().setVolume(volume);
 
+//loops
+var loopMainloop;
+var loopPipeloop;
+
 $(document).ready(function() {
+   currentstate = states.GameScreen;
    //debug mode?
    if(debugmode)
    {
@@ -26,8 +41,8 @@ $(document).ready(function() {
       $(".boundingbox").show();
    }
    var updaterate = 1000.0 / 60.0 ; //60 times a second
-   setInterval(mainloop, updaterate);
-   setInterval(updatePipes, 1350);
+   loopMainloop = setInterval(mainloop, updaterate);
+   loopPipeloop = setInterval(updatePipes, 1500);
 });
 
 function mainloop() {
@@ -68,6 +83,11 @@ function mainloop() {
       if(box.bottom + velocity >= $("#land").offset().top)
          velocity = -velocity;
    }
+   
+   //have they tried to escape through the ceiling? :o
+   var ceiling = $("#ceiling");
+   if(boxtop <= (ceiling.offset().top + ceiling.height()))
+      position = 0;
    
    //we can't go any further without a pipe
    if(pipes[0] == null)
@@ -118,7 +138,6 @@ function mainloop() {
       //and score a point
       playerScore();
    }
-   $("#debug").text(score);
 }
 
 //Handle space bar
@@ -136,15 +155,35 @@ else
 
 function playerJump()
 {
-   velocity = jump;
-   //play jump sound
-   soundJump.stop();
-   soundJump.play();
+   if(currentstate == states.GameScreen)
+   {
+      velocity = jump;
+      //play jump sound
+      soundJump.stop();
+      soundJump.play();
+   }
 }
 
 function playerDead()
 {
-
+   //end the game!
+   currentstate = states.ScoreScreen;
+   
+   //destroy our gameloops
+   clearInterval(loopMainloop);
+   clearInterval(loopPipeloop);
+   
+   //clear out all the pipes
+   $(".pipe").remove();
+   
+   //drop the bird to the floor
+   var playerbottom = $("#player").position().top + $("#player").width(); //we use width because he'll be rotated 90 deg
+   var floor = $("#flyarea").height();
+   var movey = Math.max(0, floor - playerbottom);
+   $("#player").transition({ x: movey + 'px', rotate: 90}, 1000, 'easeInOutCubic');
+   
+   //play the hit sound (then the dead sound)
+   soundHit.play().bind("ended", function() { soundDie.play(); } );
 }
 
 function playerScore()
