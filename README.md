@@ -16,6 +16,15 @@ Live App
 Check out a live preview of it over here:  
 http://nebez.github.io/floppybird/
 
+Cool Stuff
+---------
+chrisbeaumont made an awesome auto-pilot, check it out: http://chrisbeaumont.github.io/floppybird/
+
+Credits
+------
+**James Anderson** for optimizing all the assets  
+
+
 License
 =====
 Copyright 2014 Nebez Briefkani
