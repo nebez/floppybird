@@ -22,7 +22,7 @@ chrisbeaumont made an awesome auto-pilot, check it out: http://chrisbeaumont.git
 
 Credits
 ------
-**James Anderson** for optimizing all the assets  
+**[@aregowe](https://github.com/aregowe)** for optimizing all the assets
 
 
 License
