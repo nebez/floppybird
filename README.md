@@ -16,6 +16,7 @@ http://chrisbeaumont.github.io/floppybird/ - **[@chrisbeaumont](https://github.c
 http://dota2.cyborgmatt.com/flappydota/ - flappy dota, this one is really cool.  
 http://www.bicicletapegas.ro/flappypegas/ - flappy pegasus!  
 http://floppyduck.com/ - floppy duck.
+http://flappydoge.lukas.pw/ - flappy doge!
 
 Credits
 ------
