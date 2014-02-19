@@ -13,6 +13,7 @@ Cool Stuff
 ---------
 *Some cool things other people have done with the code. Let me know about your projects and I'll link it here*
 http://chrisbeaumont.github.io/floppybird/ - **[@chrisbeaumont](https://github.com/chrisbeaumont)** made an awesome auto-pilot, check it out  
+http://www.lobe.io/flappy-math-saga/- **[@tikwid](https://github.com/tikwid)** made a really cool version designed to teach you times tables. really cool.  
 http://dota2.cyborgmatt.com/flappydota/ - flappy dota, this one is really cool.  
 http://www.bicicletapegas.ro/flappypegas/ - flappy pegasus!  
 http://floppyduck.com/ - floppy duck.
