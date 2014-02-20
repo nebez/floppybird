@@ -16,8 +16,9 @@ http://chrisbeaumont.github.io/floppybird/ - **[@chrisbeaumont](https://github.c
 http://www.lobe.io/flappy-math-saga/- **[@tikwid](https://github.com/tikwid)** made a really cool version designed to teach you times tables. really cool.  
 http://dota2.cyborgmatt.com/flappydota/ - flappy dota, this one is really cool.  
 http://www.bicicletapegas.ro/flappypegas/ - flappy pegasus!  
-http://floppyduck.com/ - floppy duck.
-http://flappydoge.lukas.pw/ - flappy doge!
+http://floppyduck.com/ - floppy duck.  
+http://flappydoge.lukas.pw/ - flappy doge!  
+http://flappy-craft.com/ - minecraft-inspired floppybird. ducks, eggs, fences.
 
 Credits
 ------
