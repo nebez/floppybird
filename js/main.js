@@ -60,6 +60,54 @@
       ScoreScreen: 2
    });
 
+   function GamePlay() {
+      this.velocity = 0;
+      this.position = 180;
+      this.rotation = 0;
+      this.score = 0;
+      this.savedscore = getCookie("highscore");
+   }
+
+   GamePlay.prototype.sethighScore = function() {
+      if(this.savedscore != "")
+         this.highscore = parseInt(this.savedscore);
+      console.log(this);
+   }
+
+   function Screens() {
+      this.$splashScreen = $("#splash");
+      this.$scoreboard = $("#scoreboard");
+   }
+
+   Screens.prototype.showSplashScreen = function() {
+      GamePlay.currentstate = states.SplashScreen;
+      setDefaults();
+
+      //update the player in preparation for the next game
+      $player.css({ y: 0, x: 0});
+      updatePlayer();
+
+      soundSwoosh.stop();
+      soundSwoosh.play();
+
+      //clear out all the pipes if there are any
+      $(".pipe").remove();
+      pipes = new Array();
+
+      //make everything animated again
+      setAnimation('running');
+
+      //fade in the splash
+      this.$splashScreen.transition({ opacity: 1 }, 2000, 'ease');
+   }
+
+floppybird.newGame = function () {
+   var GamePlayvar = new GamePlay();
+       GamePlayvar.sethighScore();
+
+   var Screensvar = new Screens();
+       Screensvar.showSplashScreen();
+};
 
    $(document).ready(function() {
       init();
@@ -77,16 +125,10 @@
       }
 
       //get the highscore
-      getHighScore();
+      //getHighScore();
 
       //start with the splash screen
-      showSplash();
-   }
-
-   function getHighScore() {
-      var savedscore = getCookie("highscore");
-      if(savedscore != "")
-         highscore = parseInt(savedscore);
+      //showSplash();
    }
 
    function getCookie(cname)
@@ -415,7 +457,7 @@
          //save it!
          setCookie("highscore", highscore, 999);
       }
-      console.log(highscore);
+
       //update the scoreboard
       setSmallScore();
       setHighScore();
