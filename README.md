@@ -19,7 +19,8 @@ http://dota2.cyborgmatt.com/flappydota/ - flappy dota, this one is really cool.
 http://www.bicicletapegas.ro/flappypegas/ - flappy pegasus!  
 http://floppyduck.com/ - floppy duck.  
 http://flappydoge.lukas.pw/ - flappy doge!  
-http://flappy-craft.com/ - minecraft-inspired floppybird. ducks, eggs, fences.
+http://flappy-craft.com/ - minecraft-inspired floppybird. ducks, eggs, fences.  
+http://tippy.gochiusa.net/ - Japanese anime inspired floppybird.
 
 Credits
 ------
