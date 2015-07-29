@@ -17,36 +17,36 @@
 
 @-webkit-keyframes animLand {
    0% { background-position: 0px 0px; }
-   100% { background-position: -335px 0px; }
+   100% { background-position: -497px 0px; }
 }
 @-moz-keyframes animLand {
    0% { background-position: 0px 0px; }
-   100% { background-position: -335px 0px; }
+   100% { background-position: -497px 0px; }
 }
 @-o-keyframes animLand {
    0% { background-position: 0px 0px; }
-   100% { background-position: -335px 0px; }
+   100% { background-position: -497px 0px; }
 }
 @keyframes animLand {
    0% { background-position: 0px 0px; }
-   100% { background-position: -335px 0px; }
+   100% { background-position: -497px 0px; }
 }
 
 @-webkit-keyframes animSky {
    0% { background-position: 0px 100%; }
-   100% { background-position: -275px 100%; }
+   100% { background-position: -586px 100%; }
 }
 @-moz-keyframes animSky {
    0% { background-position: 0px 100%; }
-   100% { background-position: -275px 100%; }
+   100% { background-position: -586px 100%; }
 }
 @-o-keyframes animSky {
    0% { background-position: 0px 100%; }
-   100% { background-position: -275px 100%; }
+   100% { background-position: -586px 100%; }
 }
 @keyframes animSky {
    0% { background-position: 0px 100%; }
-   100% { background-position: -275px 100%; }
+   100% { background-position: -586px 100%; }
 }
 
 @-webkit-keyframes animBird {
@@ -67,37 +67,37 @@
 }
 
 @-webkit-keyframes animPipe {
-   0% { left: 900px; }
+   0% { left: 800px; }
    100% { left: -100px; }
 }
 @-moz-keyframes animPipe {
-   0% { left: 900px; }
+   0% { left: 800px; }
    100% { left: -100px; }
 }
 @-o-keyframes animPipe {
-   0% { left: 900px; }
+   0% { left: 800px; }
    100% { left: -100px; }
 }
 @keyframes animPipe {
-   0% { left: 900px; }
+   0% { left: 800px; }
    100% { left: -100px; }
 }
 
 @-webkit-keyframes animCeiling {
    0% { background-position: 0px 0px; }
-   100% { background-position: -63px 0px; }
+   100% { background-position: -928px 0px; }
 }
 @-moz-keyframes animCeiling {
    0% { background-position: 0px 0px; }
-   100% { background-position: -63px 0px; }
+   100% { background-position: -928px 0px; }
 }
 @-o-keyframes animCeiling {
    0% { background-position: 0px 0px; }
-   100% { background-position: -63px 0px; }
+   100% { background-position: -928px 0px; }
 }
 @keyframes animCeiling {
    0% { background-position: 0px 0px; }
-   100% { background-position: -63px 0px; }
+   100% { background-position: -928px 0px; }
 }
 
 
@@ -157,7 +157,7 @@ Screen - Game
    background-image: url('../assets/sky.png');
    background-repeat: repeat-x;
    background-position: 0px 100%;
-   background-color: #4ec0ca;
+   background-color: #f6f6f6;
    
    -webkit-animation: animSky 7s linear infinite;
    animation: animSky 7s linear infinite;
@@ -174,14 +174,15 @@ Screen - Game
 #ceiling
 {
    position: absolute;
-   top: -16px;
-   height: 16px;
+   top: -156px;
+   height:156px;
    width: 100%;
    background-image: url('../assets/ceiling.png');
+/*    background-color: #8DDBF5; */
    background-repeat: repeat-x;
    
-   -webkit-animation: animCeiling 481ms linear infinite;
-   animation: animCeiling 481ms linear infinite;
+   -webkit-animation: animCeiling 7000ms linear infinite;
+   animation: animCeiling 7000ms linear infinite;
 }
 
 #land
@@ -190,13 +191,14 @@ Screen - Game
    bottom: 0;
    width: 100%;
    height: 20%;
-   background-image: url('../assets/land.png');
+   background-color: #ffffff;
+
    background-repeat: repeat-x;
    background-position: 0px 0px;
-   background-color: #ded895;
+   background-color: #f8f8f8;
    
-   -webkit-animation: animLand 2516ms linear infinite;
-   animation: animLand 2516ms linear infinite;
+   -webkit-animation: animLand 5000ms linear infinite;
+   animation: animLand 5000ms linear infinite;
 }
 
 #bigscore
@@ -222,6 +224,8 @@ Screen - Game
    width: 188px;
    height: 170px;
    background-image: url('../assets/splash.png');
+    background-size : 100% 100%;
+
    background-repeat: no-repeat;
 }
 
@@ -235,6 +239,8 @@ Screen - Game
    width: 236px;
    height: 280px;
    background-image: url('../assets/scoreboard.png');
+       background-size : 100% 100%;
+
    background-repeat: no-repeat;
    
    z-index: 1000;
@@ -311,13 +317,15 @@ Screen - Game
 .bird
 {
    position: absolute;
-   width: 34px;
-   height: 24px;
+   width: 17px;
+   height: 30px;
    background-image: url('../assets/bird.png');
-   
-   -webkit-animation: animBird 300ms steps(4) infinite;
-   animation: animBird 300ms steps(4) infinite;
+   background-size : 100% 100%;
+   /*-webkit-animation: animBird 300ms steps(4) infinite;
+   animation: animBird 300ms steps(4) infinite;*/
 }
+
+
 
 .pipe
 {
@@ -325,10 +333,10 @@ Screen - Game
    left: -100px;
    width: 52px;
    height: 100%;
-   z-index: 10;
+   z-index: 20;
    
-   -webkit-animation: animPipe 7500ms linear;
-   animation: animPipe 7500ms linear;
+   -webkit-animation: animPipe 4000ms linear;
+   animation: animPipe 4000ms linear;
 }
 
 .pipe_upper
@@ -337,6 +345,7 @@ Screen - Game
    top: 0;
    width: 52px;
    background-image: url('../assets/pipe.png');
+
    background-repeat: repeat-y;
    background-position: center;
 }
@@ -347,7 +356,7 @@ Screen - Game
    position: absolute;
    bottom: 0;
    width: 52px;
-   height: 26px;
+   height: 18px;
    background-image: url('../assets/pipe-down.png');
 }
 
@@ -367,25 +376,7 @@ Screen - Game
    position: absolute;
    top: 0;
    width: 52px;
-   height: 26px;
+   height: 47px;
    background-image: url('../assets/pipe-up.png');
 }
 
-#footer
-{
-   position: absolute;
-   bottom: 3px;
-   left: 3px;
-}
-
-#footer a,
-#footer a:link,
-#footer a:visited,
-#footer a:hover,
-#footer a:active
-{
-   display: block;
-   padding: 2px;
-   text-decoration: none;
-   color: #fff;
-}
