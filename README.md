@@ -15,11 +15,7 @@ Cool Stuff
 https://github.com/rukmal/FlappyLeapBird - **[Rukmal](http://rukmal.me/)** integrated LeapMotion Controller functionality! Check out his website, he's done some cool stuff.  
 http://chrisbeaumont.github.io/floppybird/ - **[@chrisbeaumont](https://github.com/chrisbeaumont)** made an awesome auto-pilot, check it out  
 http://www.lobe.io/flappy-math-saga/- **[@tikwid](https://github.com/tikwid)** made a really cool version designed to teach you times tables. really cool.  
-http://dota2.cyborgmatt.com/flappydota/ - flappy dota, this one is really cool.  
-http://www.bicicletapegas.ro/flappypegas/ - flappy pegasus!  
-http://floppyduck.com/ - floppy duck.  
-http://flappydoge.lukas.pw/ - flappy doge!  
-http://flappy-craft.com/ - minecraft-inspired floppybird. ducks, eggs, fences.  
+http://dota2.cyborgmatt.com/flappydota/ - flappy dota, this one is really cool.
 http://tippy.gochiusa.net/ - Japanese anime inspired floppybird.
 
 Credits
