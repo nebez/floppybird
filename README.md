@@ -19,9 +19,8 @@ https://github.com/rukmal/FlappyLeapBird - **[Rukmal](http://rukmal.me/)** integ
 http://chrisbeaumont.github.io/floppybird/ - **[@chrisbeaumont](https://github.com/chrisbeaumont)** made an awesome auto-pilot, check it out  
 http://www.lobe.io/flappy-math-saga/- **[@tikwid](https://github.com/tikwid)** made a really cool version designed to teach you times tables. really cool.  
 http://dota2.cyborgmatt.com/flappydota/ - flappy dota, this one is really cool.
-http://emdigital.ru/wiki — floppybird on **[EyeMedia Instagram Marketing Agency](http://emdigital.ru/)** website.
 http://tippy.gochiusa.net/ - Japanese anime inspired floppybird.
-
+http://emdigital.ru/wiki — floppybird on **[EyeMedia Instagram Marketing Agency](http://emdigital.ru/)** website.
 Credits
 ------
 **[@aregowe](https://github.com/aregowe)** for optimizing all the assets
