@@ -21,6 +21,7 @@ http://www.lobe.io/flappy-math-saga/- **[@tikwid](https://github.com/tikwid)** m
 http://dota2.cyborgmatt.com/flappydota/ - flappy dota, this one is really cool.
 http://tippy.gochiusa.net/ - Japanese anime inspired floppybird.
 http://emdigital.ru/wiki — floppybird on **[EyeMedia Instagram Marketing Agency](http://emdigital.ru/)** website.
+
 Credits
 ------
 **[@aregowe](https://github.com/aregowe)** for optimizing all the assets
