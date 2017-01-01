@@ -17,36 +17,36 @@
 
 @-webkit-keyframes animLand {
    0% { background-position: 0px 0px; }
-   100% { background-position: -335px 0px; }
+   100% { background-position: 335px 0px; }
 }
 @-moz-keyframes animLand {
    0% { background-position: 0px 0px; }
-   100% { background-position: -335px 0px; }
+   100% { background-position: 335px 0px; }
 }
 @-o-keyframes animLand {
    0% { background-position: 0px 0px; }
-   100% { background-position: -335px 0px; }
+   100% { background-position: 335px 0px; }
 }
 @keyframes animLand {
    0% { background-position: 0px 0px; }
-   100% { background-position: -335px 0px; }
+   100% { background-position: 335px 0px; }
 }
 
 @-webkit-keyframes animSky {
    0% { background-position: 0px 100%; }
-   100% { background-position: -275px 100%; }
+   100% { background-position: 275px 100%; }
 }
 @-moz-keyframes animSky {
    0% { background-position: 0px 100%; }
-   100% { background-position: -275px 100%; }
+   100% { background-position: 275px 100%; }
 }
 @-o-keyframes animSky {
    0% { background-position: 0px 100%; }
-   100% { background-position: -275px 100%; }
+   100% { background-position: 275px 100%; }
 }
 @keyframes animSky {
    0% { background-position: 0px 100%; }
-   100% { background-position: -275px 100%; }
+   100% { background-position: 275px 100%; }
 }
 
 @-webkit-keyframes animBird {
@@ -85,19 +85,19 @@
 
 @-webkit-keyframes animCeiling {
    0% { background-position: 0px 0px; }
-   100% { background-position: -63px 0px; }
+   100% { background-position: 63px 0px; }
 }
 @-moz-keyframes animCeiling {
    0% { background-position: 0px 0px; }
-   100% { background-position: -63px 0px; }
+   100% { background-position: 63px 0px; }
 }
 @-o-keyframes animCeiling {
    0% { background-position: 0px 0px; }
-   100% { background-position: -63px 0px; }
+   100% { background-position: 63px 0px; }
 }
 @keyframes animCeiling {
    0% { background-position: 0px 0px; }
-   100% { background-position: -63px 0px; }
+   100% { background-position: 63px 0px; }
 }
 
 
@@ -157,7 +157,7 @@ Screen - Game
    background-image: url('../assets/sky.png');
    background-repeat: repeat-x;
    background-position: 0px 100%;
-   background-color: #4ec0ca;
+   background-color: #b8b8b8;
    
    -webkit-animation: animSky 7s linear infinite;
    animation: animSky 7s linear infinite;
