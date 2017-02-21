@@ -35,7 +35,7 @@ var flyArea = $("#flyarea").height();
 var score = 0;
 var highscore = 0;
 
-var pipeheight = 90;
+var pipeheight = 120;
 var pipewidth = 52;
 var pipes = new Array();
 
@@ -326,17 +326,17 @@ function setMedal()
    var elemmedal = $("#medal");
    elemmedal.empty();
    
-   if(score < 10)
+   if(score < 20)
       //signal that no medal has been won
       return false;
    
-   if(score >= 10)
-      medal = "bronze";
    if(score >= 20)
-      medal = "silver";
-   if(score >= 30)
-      medal = "gold";
+      medal = "bronze";
    if(score >= 40)
+      medal = "silver";
+   if(score >= 70)
+      medal = "gold";
+   if(score >= 100)
       medal = "platinum";
    
    elemmedal.append('<img src="assets/medal_' + medal +'.png" alt="' + medal +'">');
@@ -454,7 +454,6 @@ function playerScore()
 {
    score += 1;
    //play score sound
-   soundScore.stop();
    soundScore.play();
    setBigScore();
 }
