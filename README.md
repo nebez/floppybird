@@ -12,6 +12,7 @@ http://nebez.github.io/floppybird/
 Cool Stuff
 ---------
 *Some cool things other people have done with the code. Let me know about your projects and I'll link it here*  
+https://wanderingstan.github.io/handybird/ - **[@wanderinstan](https://github.com/wanderingstan)** - Real hand gestures to play Flappy Bird, using doppler effect and microphone.
 http://www.hhcc.com/404 - **[Hill Holiday](http://www.hhcc.com/)** using it for their 404  
 http://heart-work.se/duvchi - Floppy bird, modified, and used as a promotional campaign for an album release  
 https://www.progressivewebflap.com/ - **[@jsonthor](https://twitter.com/jsonthor)** turned Floppy Bird into a PWA!
