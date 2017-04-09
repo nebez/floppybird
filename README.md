@@ -21,7 +21,8 @@ http://chrisbeaumont.github.io/floppybird/ - **[@chrisbeaumont](https://github.c
 http://www.lobe.io/flappy-math-saga/- **[@tikwid](https://github.com/tikwid)** made a really cool version designed to teach you times tables. really cool.  
 http://dota2.cyborgmatt.com/flappydota/ - flappy dota, this one is really cool.  
 http://tippy.gochiusa.net/ - Japanese anime inspired floppybird.  
-http://emdigital.ru/wiki — floppybird on **[EyeMedia Instagram Marketing Agency](http://emdigital.ru/)** website.  
+http://emdigital.ru/wiki — floppybird on **[EyeMedia Instagram Marketing Agency](http://emdigital.ru/)** website. 
+http://labs.aylien.com/flappy-bird/ - **[@mdibaiee/flappy-es](https://github.com/mdibaiee/flappy-es)** - Playing Flappy Bird using Evolution Strategies
 
 Credits
 ------
