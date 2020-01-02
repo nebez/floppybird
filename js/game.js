@@ -117,10 +117,11 @@ var Pipe = (function () {
     return Pipe;
 }());
 var PipeManager = (function () {
-    function PipeManager() {
+    function PipeManager(pipeAreaDomElement) {
         this.pipeDelay = 1400;
         this.lastPipeInsertedTimestamp = 0;
         this.pipes = [];
+        this.pipeAreaDomElement = pipeAreaDomElement;
     }
     PipeManager.prototype.tick = function (now) {
         if (now - this.lastPipeInsertedTimestamp < this.pipeDelay) {
@@ -130,7 +131,7 @@ var PipeManager = (function () {
         this.lastPipeInsertedTimestamp = now;
         var pipe = new Pipe();
         this.pipes.push(pipe);
-        GAME_ELEMENTS.flyArea.appendChild(pipe.domElement);
+        this.pipeAreaDomElement.appendChild(pipe.domElement);
         this.pipes = this.pipes.filter(function (pipe) {
             pipe.tick();
             if (pipe.domElement.getBoundingClientRect().x <= -100) {
@@ -147,7 +148,7 @@ var bird = new Bird(GAME_ELEMENTS.bird, {
     jumpVelocity: -4.6,
     flyAreaHeight: GAME_ELEMENTS.flyArea.getBoundingClientRect().height,
 });
-var pipeManager = new PipeManager();
+var pipeManager = new PipeManager(GAME_ELEMENTS.flyArea);
 var gameLoop = function () {
     var now = Date.now();
     bird.tick();

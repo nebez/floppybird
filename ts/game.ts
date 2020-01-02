@@ -92,9 +92,14 @@ class Pipe implements Tickable {
 }
 
 class PipeManager implements Tickable {
+    protected pipeAreaDomElement: HTMLElement;
     protected pipeDelay = 1400;
     protected lastPipeInsertedTimestamp = 0;
     protected pipes: Pipe[] = [];
+
+    constructor(pipeAreaDomElement: HTMLElement) {
+        this.pipeAreaDomElement = pipeAreaDomElement;
+    }
 
     public tick(now: number) {
         if (now - this.lastPipeInsertedTimestamp < this.pipeDelay) {
@@ -108,7 +113,7 @@ class PipeManager implements Tickable {
         this.lastPipeInsertedTimestamp = now;
         const pipe = new Pipe();
         this.pipes.push(pipe);
-        GAME_ELEMENTS.flyArea!.appendChild(pipe.domElement);
+        this.pipeAreaDomElement.appendChild(pipe.domElement);
 
         this.pipes = this.pipes.filter(pipe => {
             pipe.tick();
@@ -129,7 +134,7 @@ const bird = new Bird(GAME_ELEMENTS.bird, {
     flyAreaHeight: GAME_ELEMENTS.flyArea.getBoundingClientRect().height,
 });
 
-const pipeManager = new PipeManager();
+const pipeManager = new PipeManager(GAME_ELEMENTS.flyArea);
 
 const gameLoop = () => {
     const now = Date.now();
