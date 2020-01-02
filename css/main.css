@@ -210,10 +210,14 @@ Screen - Game
    cursor: pointer;
 }
 
+#debug {
+   position: relative;
+   z-index: 9999;
+}
+
 .boundingbox
 {
    position: absolute;
-   display: none;
    top: 0;
    left: 0;
    width: 0;

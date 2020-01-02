@@ -69,6 +69,28 @@ var log = function () {
     }
     console.log.apply(console, __spread(["[" + Date.now() + "]"], args));
 };
+var toRad = function (degrees) {
+    return degrees * Math.PI / 180;
+};
+var debugBoxes = new Map();
+var drawDebugBox = function (element, box) {
+    if (!debugBoxes.has(element)) {
+        var newDebugBox = document.createElement('div');
+        newDebugBox.className = 'boundingbox';
+        var debugContainer = document.getElementById('debug');
+        debugContainer.appendChild(newDebugBox);
+        debugBoxes.set(element, newDebugBox);
+    }
+    var boudingBox = debugBoxes.get(element);
+    if (boudingBox == null) {
+        log("couldn't create a debug box for " + element);
+        return;
+    }
+    boudingBox.style.top = box.y + "px";
+    boudingBox.style.left = box.x + "px";
+    boudingBox.style.width = box.width + "px";
+    boudingBox.style.height = box.height + "px";
+};
 var GAME_ELEMENTS = {
     bird: document.getElementById('player'),
     flyArea: document.getElementById('flyarea'),
@@ -83,24 +105,36 @@ var Bird = (function () {
         this.velocity = 0;
         this.position = 180;
         this.rotation = 0;
+        this.box = { x: 0, y: 0, width: 34, height: 24 };
         this.domElement = domElement;
         this.flyingProperties = flyingProperties;
+        console.log(this.flyingProperties);
     }
     Bird.prototype.tick = function () {
         this.velocity += this.flyingProperties.gravity;
+        this.rotation = Math.min((this.velocity / 10) * 90, 90);
         this.position += this.velocity;
         if (this.position < 0) {
             this.position = 0;
         }
-        if (this.position > this.flyingProperties.flyAreaHeight) {
-            this.position = this.flyingProperties.flyAreaHeight;
+        if (this.position > this.flyingProperties.flyAreaBox.height) {
+            this.position = this.flyingProperties.flyAreaBox.height;
         }
-        this.rotation = Math.min((this.velocity / 10) * 90, 90);
+        var rotationInRadians = Math.abs(toRad(this.rotation));
+        var widthMultiplier = this.height - this.width;
+        var heightMultiplier = this.width - this.height;
+        this.box.width = this.width + (widthMultiplier * Math.sin(rotationInRadians));
+        this.box.height = this.height + (heightMultiplier * Math.sin(rotationInRadians));
+        var xShift = (this.width - this.box.width) / 2;
+        var yShift = (this.height - this.box.height) / 2;
+        this.box.x = 60 + xShift;
+        this.box.y = this.position + yShift + this.flyingProperties.flyAreaBox.y;
     };
     Bird.prototype.jump = function () {
         this.velocity = this.flyingProperties.jumpVelocity;
     };
     Bird.prototype.draw = function () {
+        drawDebugBox(this.domElement, this.box);
         this.domElement.style.transform = "\n            translate3d(0px, " + this.position + "px, 0px)\n            rotate3d(0, 0, 1, " + this.rotation + "deg)\n        ";
     };
     return Bird;
@@ -112,7 +146,6 @@ var Pipe = (function () {
         this.domElement.innerHTML = "\n            <div class=\"pipe_upper\" style=\"height: 165px;\"></div>\n            <div class=\"pipe_lower\" style=\"height: 165px;\"></div>\n        ";
     }
     Pipe.prototype.tick = function () {
-        console.log(this.domElement.getBoundingClientRect());
     };
     return Pipe;
 }());
@@ -146,7 +179,7 @@ var PipeManager = (function () {
 var bird = new Bird(GAME_ELEMENTS.bird, {
     gravity: 0.25,
     jumpVelocity: -4.6,
-    flyAreaHeight: GAME_ELEMENTS.flyArea.getBoundingClientRect().height,
+    flyAreaBox: GAME_ELEMENTS.flyArea.getBoundingClientRect(),
 });
 var pipeManager = new PipeManager(GAME_ELEMENTS.flyArea);
 var gameLoop = function () {
