@@ -74,33 +74,52 @@ class Bird implements Tickable, Drawable {
     }
 }
 
-class Pipe {
+class Pipe implements Tickable {
     public domElement: HTMLDivElement;
 
     constructor() {
         this.domElement = document.createElement('div');
         this.domElement.className = 'pipe animated';
-        this.domElement.innerHTML = 'test';
+        this.domElement.innerHTML = `
+            <div class="pipe_upper" style="height: 165px;"></div>
+            <div class="pipe_lower" style="height: 165px;"></div>
+        `;
+    }
+
+    public tick() {
+        console.log(this.domElement.getBoundingClientRect());
     }
 }
 
 class PipeManager implements Tickable {
     protected pipeDelay = 1400;
-    protected lastPipeInserted = 0;
+    protected lastPipeInsertedTimestamp = 0;
+    protected pipes: Pipe[] = [];
 
     public tick(now: number) {
-        if (now - this.lastPipeInserted < this.pipeDelay) {
-            // Wait a bit longer...
+        if (now - this.lastPipeInsertedTimestamp < this.pipeDelay) {
+            // Wait a little longer... we don't need to do this too often.
             return;
         }
 
-        this.insertPipe(now);
-    }
+        // Insert a new pipe and then prune all the pipes that have gone
+        // entirely off the screen
+        log('inserting pipe after', now - this.lastPipeInsertedTimestamp, 'ms');
+        this.lastPipeInsertedTimestamp = now;
+        const pipe = new Pipe();
+        this.pipes.push(pipe);
+        GAME_ELEMENTS.flyArea!.appendChild(pipe.domElement);
 
-    public insertPipe(now: number) {
-        log('inserting pipe after', now - this.lastPipeInserted, 'ms');
-        this.lastPipeInserted = now;
-        new Pipe();
+        this.pipes = this.pipes.filter(pipe => {
+            pipe.tick();
+
+            if (pipe.domElement.getBoundingClientRect().x <= -100) {
+                pipe.domElement.remove();
+                return false;
+            }
+
+            return true;
+        });
     }
 }
 

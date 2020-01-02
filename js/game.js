@@ -109,25 +109,36 @@ var Pipe = (function () {
     function Pipe() {
         this.domElement = document.createElement('div');
         this.domElement.className = 'pipe animated';
-        this.domElement.innerHTML = 'test';
+        this.domElement.innerHTML = "\n            <div class=\"pipe_upper\" style=\"height: 165px;\"></div>\n            <div class=\"pipe_lower\" style=\"height: 165px;\"></div>\n        ";
     }
+    Pipe.prototype.tick = function () {
+        console.log(this.domElement.getBoundingClientRect());
+    };
     return Pipe;
 }());
 var PipeManager = (function () {
     function PipeManager() {
         this.pipeDelay = 1400;
-        this.lastPipeInserted = 0;
+        this.lastPipeInsertedTimestamp = 0;
+        this.pipes = [];
     }
     PipeManager.prototype.tick = function (now) {
-        if (now - this.lastPipeInserted < this.pipeDelay) {
+        if (now - this.lastPipeInsertedTimestamp < this.pipeDelay) {
             return;
         }
-        this.insertPipe(now);
-    };
-    PipeManager.prototype.insertPipe = function (now) {
-        log('inserting pipe after', now - this.lastPipeInserted, 'ms');
-        this.lastPipeInserted = now;
-        new Pipe();
+        log('inserting pipe after', now - this.lastPipeInsertedTimestamp, 'ms');
+        this.lastPipeInsertedTimestamp = now;
+        var pipe = new Pipe();
+        this.pipes.push(pipe);
+        GAME_ELEMENTS.flyArea.appendChild(pipe.domElement);
+        this.pipes = this.pipes.filter(function (pipe) {
+            pipe.tick();
+            if (pipe.domElement.getBoundingClientRect().x <= -100) {
+                pipe.domElement.remove();
+                return false;
+            }
+            return true;
+        });
     };
     return PipeManager;
 }());
