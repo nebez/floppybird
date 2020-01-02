@@ -77,7 +77,7 @@ class Bird implements Tickable, Drawable {
     protected velocity = 0;
     protected position = 180;
     protected rotation = 0;
-    protected box: BoundingBox = { x: 0, y: 0, width: 34, height: 24 };
+    protected box: BoundingBox = { x: 60, y: 180, width: 34, height: 24 };
 
     constructor(domElement: HTMLElement, flyingProperties: FlyingProperties) {
         this.domElement = domElement;
@@ -90,6 +90,7 @@ class Bird implements Tickable, Drawable {
         this.rotation = Math.min((this.velocity / 10) * 90, 90);
         this.position += this.velocity;
 
+        // Clip us back in
         if (this.position < 0) {
             this.position = 0;
         }
@@ -103,7 +104,7 @@ class Bird implements Tickable, Drawable {
         // the bird 90 degrees (facing down), our bird becomes 5 px closer to
         // the top and 5 px further from the left -- because it's 10 px wider
         // than it is tall. To make this easier, we first calculate the height
-        // and width of our bird and then its x/y based on that.
+        // and width of our bird and then calculate its x,y based on that.
         const rotationInRadians = Math.abs(toRad(this.rotation));
         const widthMultiplier = this.height - this.width; // 24 - 34 = -10
         const heightMultiplier = this.width - this.height; // 34 - 24 = 10

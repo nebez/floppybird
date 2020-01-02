@@ -105,7 +105,7 @@ var Bird = (function () {
         this.velocity = 0;
         this.position = 180;
         this.rotation = 0;
-        this.box = { x: 0, y: 0, width: 34, height: 24 };
+        this.box = { x: 60, y: 180, width: 34, height: 24 };
         this.domElement = domElement;
         this.flyingProperties = flyingProperties;
         console.log(this.flyingProperties);
