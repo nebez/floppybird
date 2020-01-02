@@ -221,18 +221,15 @@ Screen - Game
    border: 1px solid red;
 }
 
-#player
-{
-   left: 60px;
-   top: 200px;
-}
-
 .bird
 {
    position: absolute;
+
+   left: 60px;
    width: 34px;
    height: 24px;
    background-image: url('../assets/bird.png');
+   will-change: transform;
 
    animation: animBird 300ms steps(4) infinite;
 }
