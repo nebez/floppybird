@@ -91,13 +91,34 @@ var drawDebugBox = function (element, box) {
     boudingBox.style.width = box.width + "px";
     boudingBox.style.height = box.height + "px";
 };
-var GAME_ELEMENTS = {
-    bird: document.getElementById('player'),
-    flyArea: document.getElementById('flyarea'),
-};
-if (GAME_ELEMENTS.bird == null || GAME_ELEMENTS.flyArea == null) {
-    throw new Error('Missing an element');
-}
+var Game = (function () {
+    function Game(domElements) {
+        this.domElements = domElements;
+        this.bird = new Bird(domElements.bird, {
+            gravity: 0.25,
+            jumpVelocity: -4.6,
+            flightAreaBox: domElements.flightArea.getBoundingClientRect(),
+        });
+        this.pipes = new PipeManager(domElements.flightArea);
+    }
+    Game.prototype.start = function () {
+        var _this = this;
+        this.gameLoop = setInterval(this.tick.bind(this), 1000 / 60);
+        requestAnimationFrame(this.draw.bind(this));
+        this.bird.jump();
+        setInterval(function () { return _this.bird.jump(); }, 574);
+    };
+    Game.prototype.tick = function () {
+        var now = Date.now();
+        this.bird.tick();
+        this.pipes.tick(now);
+    };
+    Game.prototype.draw = function () {
+        requestAnimationFrame(this.draw.bind(this));
+        this.bird.draw();
+    };
+    return Game;
+}());
 var Bird = (function () {
     function Bird(domElement, flyingProperties) {
         this.width = 34;
@@ -108,7 +129,6 @@ var Bird = (function () {
         this.box = { x: 60, y: 180, width: 34, height: 24 };
         this.domElement = domElement;
         this.flyingProperties = flyingProperties;
-        console.log(this.flyingProperties);
     }
     Bird.prototype.tick = function () {
         this.velocity += this.flyingProperties.gravity;
@@ -117,8 +137,8 @@ var Bird = (function () {
         if (this.position < 0) {
             this.position = 0;
         }
-        if (this.position > this.flyingProperties.flyAreaBox.height) {
-            this.position = this.flyingProperties.flyAreaBox.height;
+        if (this.position > this.flyingProperties.flightAreaBox.height) {
+            this.position = this.flyingProperties.flightAreaBox.height;
         }
         var rotationInRadians = Math.abs(toRad(this.rotation));
         var widthMultiplier = this.height - this.width;
@@ -128,7 +148,7 @@ var Bird = (function () {
         var xShift = (this.width - this.box.width) / 2;
         var yShift = (this.height - this.box.height) / 2;
         this.box.x = 60 + xShift;
-        this.box.y = this.position + yShift + this.flyingProperties.flyAreaBox.y;
+        this.box.y = this.position + yShift + this.flyingProperties.flightAreaBox.y;
     };
     Bird.prototype.jump = function () {
         this.velocity = this.flyingProperties.jumpVelocity;
@@ -141,11 +161,29 @@ var Bird = (function () {
 }());
 var Pipe = (function () {
     function Pipe() {
+        this.upperBox = { x: 0, y: 0, width: 0, height: 0 };
+        this.lowerBox = { x: 0, y: 0, width: 0, height: 0 };
         this.domElement = document.createElement('div');
         this.domElement.className = 'pipe animated';
-        this.domElement.innerHTML = "\n            <div class=\"pipe_upper\" style=\"height: 165px;\"></div>\n            <div class=\"pipe_lower\" style=\"height: 165px;\"></div>\n        ";
+        this.upperPipeDomElement = document.createElement('div');
+        this.upperPipeDomElement.className = 'pipe_upper';
+        this.upperPipeDomElement.style.height = '165px';
+        this.lowerPipeDomElement = document.createElement('div');
+        this.lowerPipeDomElement.className = 'pipe_lower';
+        this.lowerPipeDomElement.style.height = '165px';
+        this.domElement.appendChild(this.upperPipeDomElement);
+        this.domElement.appendChild(this.lowerPipeDomElement);
     }
+    Pipe.prototype.isOffScreen = function () {
+        return this.upperBox.x <= -100;
+    };
     Pipe.prototype.tick = function () {
+        this.upperBox = this.upperPipeDomElement.getBoundingClientRect();
+        this.lowerBox = this.lowerPipeDomElement.getBoundingClientRect();
+        drawDebugBox(this.upperPipeDomElement, this.upperBox);
+        drawDebugBox(this.lowerPipeDomElement, this.lowerBox);
+    };
+    Pipe.prototype.draw = function () {
     };
     return Pipe;
 }());
@@ -157,6 +195,7 @@ var PipeManager = (function () {
         this.pipeAreaDomElement = pipeAreaDomElement;
     }
     PipeManager.prototype.tick = function (now) {
+        this.pipes.forEach(function (pipe) { return pipe.tick(); });
         if (now - this.lastPipeInsertedTimestamp < this.pipeDelay) {
             return;
         }
@@ -166,8 +205,7 @@ var PipeManager = (function () {
         this.pipes.push(pipe);
         this.pipeAreaDomElement.appendChild(pipe.domElement);
         this.pipes = this.pipes.filter(function (pipe) {
-            pipe.tick();
-            if (pipe.domElement.getBoundingClientRect().x <= -100) {
+            if (pipe.isOffScreen()) {
                 pipe.domElement.remove();
                 return false;
             }
@@ -176,23 +214,14 @@ var PipeManager = (function () {
     };
     return PipeManager;
 }());
-var bird = new Bird(GAME_ELEMENTS.bird, {
-    gravity: 0.25,
-    jumpVelocity: -4.6,
-    flyAreaBox: GAME_ELEMENTS.flyArea.getBoundingClientRect(),
-});
-var pipeManager = new PipeManager(GAME_ELEMENTS.flyArea);
-var gameLoop = function () {
-    var now = Date.now();
-    bird.tick();
-    pipeManager.tick(now);
-};
-var renderingLoop = function () {
-    requestAnimationFrame(renderingLoop);
-    bird.draw();
-};
-bird.jump();
-setInterval(function () { return bird.jump(); }, 574);
-setInterval(gameLoop, 1000 / 60);
-requestAnimationFrame(renderingLoop);
+(function () {
+    var bird = document.getElementById('player');
+    var land = document.getElementById('land');
+    var flightArea = document.getElementById('flyarea');
+    if (bird == null || flightArea == null || land == null) {
+        throw new Error('Missing an element');
+    }
+    var game = new Game({ bird: bird, land: land, flightArea: flightArea });
+    game.start();
+})();
 //# sourceMappingURL=game.js.map

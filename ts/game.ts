@@ -37,19 +37,10 @@ const drawDebugBox = (element: HTMLElement, box: BoundingBox) => {
     boudingBox.style.height = `${box.height}px`;
 }
 
-const GAME_ELEMENTS = {
-    bird: document.getElementById('player'),
-    flyArea: document.getElementById('flyarea'),
-}
-
-if (GAME_ELEMENTS.bird == null || GAME_ELEMENTS.flyArea == null) {
-    throw new Error('Missing an element');
-}
-
 interface FlyingProperties {
     gravity: number;
     jumpVelocity: number;
-    flyAreaBox: BoundingBox;
+    flightAreaBox: BoundingBox;
 }
 
 interface BoundingBox {
@@ -69,6 +60,52 @@ interface Drawable {
     draw(): void;
 }
 
+interface GameHtmlElements {
+    bird: HTMLElement;
+    land: HTMLElement;
+    flightArea: HTMLElement;
+}
+
+class Game {
+    protected domElements: GameHtmlElements;
+    protected bird: Bird;
+    protected pipes: PipeManager;
+    protected gameLoop: ReturnType<typeof setInterval> | undefined;
+    protected renderingLoop: ReturnType<typeof requestAnimationFrame> | undefined;
+
+    constructor(domElements: GameHtmlElements) {
+        this.domElements = domElements;
+        this.bird = new Bird(domElements.bird, {
+            gravity: 0.25,
+            jumpVelocity: -4.6,
+            flightAreaBox: domElements.flightArea.getBoundingClientRect(),
+        });
+        this.pipes = new PipeManager(domElements.flightArea);
+    }
+
+    public start() {
+        this.gameLoop = setInterval(this.tick.bind(this), 1000 / 60);
+        requestAnimationFrame(this.draw.bind(this));
+
+        // todo: this is a test
+        this.bird.jump();
+        setInterval(() => this.bird.jump(), 574);
+    }
+
+    protected tick() {
+        const now = Date.now();
+
+        this.bird.tick();
+        this.pipes.tick(now);
+    }
+
+    protected draw() {
+        requestAnimationFrame(this.draw.bind(this));
+
+        this.bird.draw();
+    }
+}
+
 class Bird implements Tickable, Drawable {
     protected domElement: HTMLElement;
     protected flyingProperties: FlyingProperties;
@@ -82,7 +119,6 @@ class Bird implements Tickable, Drawable {
     constructor(domElement: HTMLElement, flyingProperties: FlyingProperties) {
         this.domElement = domElement;
         this.flyingProperties = flyingProperties;
-        console.log(this.flyingProperties);
     }
 
     public tick() {
@@ -95,8 +131,8 @@ class Bird implements Tickable, Drawable {
             this.position = 0;
         }
 
-        if (this.position > this.flyingProperties.flyAreaBox.height) {
-            this.position = this.flyingProperties.flyAreaBox.height;
+        if (this.position > this.flyingProperties.flightAreaBox.height) {
+            this.position = this.flyingProperties.flightAreaBox.height;
         }
 
         // We draw our bounding box around the bird through a couple steps. Our
@@ -119,7 +155,7 @@ class Bird implements Tickable, Drawable {
         this.box.x = 60 + xShift;
         // And we're our current bird position from the top + y shift + the
         // distance to the top of the window, because of the sky
-        this.box.y = this.position + yShift + this.flyingProperties.flyAreaBox.y;
+        this.box.y = this.position + yShift + this.flyingProperties.flightAreaBox.y;
     }
 
     public jump() {
@@ -137,18 +173,42 @@ class Bird implements Tickable, Drawable {
 
 class Pipe implements Tickable {
     public domElement: HTMLDivElement;
+    protected upperPipeDomElement: HTMLDivElement;
+    protected lowerPipeDomElement: HTMLDivElement;
+    protected upperBox: BoundingBox = { x: 0, y: 0, width: 0, height: 0 };
+    protected lowerBox: BoundingBox = { x: 0, y: 0, width: 0, height: 0 };
 
     constructor() {
         this.domElement = document.createElement('div');
         this.domElement.className = 'pipe animated';
-        this.domElement.innerHTML = `
-            <div class="pipe_upper" style="height: 165px;"></div>
-            <div class="pipe_lower" style="height: 165px;"></div>
-        `;
+
+        this.upperPipeDomElement = document.createElement('div');
+        this.upperPipeDomElement.className = 'pipe_upper';
+        this.upperPipeDomElement.style.height = '165px';
+
+        this.lowerPipeDomElement = document.createElement('div');
+        this.lowerPipeDomElement.className = 'pipe_lower';
+        this.lowerPipeDomElement.style.height = '165px';
+
+        this.domElement.appendChild(this.upperPipeDomElement);
+        this.domElement.appendChild(this.lowerPipeDomElement);
+    }
+
+    public isOffScreen() {
+        return this.upperBox.x <= -100;
     }
 
     public tick() {
-        // console.log(this.domElement.getBoundingClientRect());
+        this.upperBox = this.upperPipeDomElement.getBoundingClientRect();
+        this.lowerBox = this.lowerPipeDomElement.getBoundingClientRect();
+
+        // TODO: This should be in draw not tick. Find a way to move it after.
+        drawDebugBox(this.upperPipeDomElement, this.upperBox);
+        drawDebugBox(this.lowerPipeDomElement, this.lowerBox);
+    }
+
+    public draw() {
+        // drawDebugBox(this.domElement, this.upperBox);
     }
 }
 
@@ -163,6 +223,8 @@ class PipeManager implements Tickable {
     }
 
     public tick(now: number) {
+        this.pipes.forEach(pipe => pipe.tick());
+
         if (now - this.lastPipeInsertedTimestamp < this.pipeDelay) {
             // Wait a little longer... we don't need to do this too often.
             return;
@@ -177,9 +239,7 @@ class PipeManager implements Tickable {
         this.pipeAreaDomElement.appendChild(pipe.domElement);
 
         this.pipes = this.pipes.filter(pipe => {
-            pipe.tick();
-
-            if (pipe.domElement.getBoundingClientRect().x <= -100) {
+            if (pipe.isOffScreen()) {
                 pipe.domElement.remove();
                 return false;
             }
@@ -189,28 +249,16 @@ class PipeManager implements Tickable {
     }
 }
 
-const bird = new Bird(GAME_ELEMENTS.bird, {
-    gravity: 0.25,
-    jumpVelocity: -4.6,
-    // this info is wrong as soon as we resize. it should probably be passed by
-    // reference or invalidated/refreshed every time the browser changes size.
-    flyAreaBox: GAME_ELEMENTS.flyArea.getBoundingClientRect(),
-});
+(function() {
+    const bird = document.getElementById('player');
+    const land = document.getElementById('land');
+    const flightArea = document.getElementById('flyarea');
 
-const pipeManager = new PipeManager(GAME_ELEMENTS.flyArea);
+    if (bird == null || flightArea == null || land == null) {
+        throw new Error('Missing an element');
+    }
 
-const gameLoop = () => {
-    const now = Date.now();
-    bird.tick();
-    pipeManager.tick(now);
-}
+    const game = new Game({ bird, land, flightArea });
+    game.start();
+})();
 
-const renderingLoop = () => {
-    requestAnimationFrame(renderingLoop);
-    bird.draw();
-}
-
-bird.jump();
-setInterval(() => bird.jump(), 574);
-setInterval(gameLoop, 1000 / 60);
-requestAnimationFrame(renderingLoop);
