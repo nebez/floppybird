@@ -106,6 +106,7 @@ var Game = (function () {
             flightAreaBox: domElements.flightArea.getBoundingClientRect(),
         });
         this.pipes = new PipeManager(domElements.flightArea);
+        this.land = new Land(domElements.land);
     }
     Game.prototype.start = function () {
         var _this = this;
@@ -118,7 +119,7 @@ var Game = (function () {
         var now = Date.now();
         this.bird.tick();
         this.pipes.tick(now);
-        if (this.pipes.intersectsWith(this.bird.box)) {
+        if (this.pipes.intersectsWith(this.bird.box) || this.land.intersectsWith(this.bird.box)) {
             console.log('HIT');
         }
     };
@@ -168,6 +169,17 @@ var Bird = (function () {
     };
     return Bird;
 }());
+var Land = (function () {
+    function Land(domElement) {
+        this.domElement = domElement;
+        this.box = domElement.getBoundingClientRect();
+        drawDebugBox(this.domElement, this.box);
+    }
+    Land.prototype.intersectsWith = function (box) {
+        return isBoxIntersecting(this.box, box);
+    };
+    return Land;
+}());
 var Pipe = (function () {
     function Pipe() {
         this.upperBox = { x: 0, y: 0, width: 0, height: 0 };
@@ -191,8 +203,6 @@ var Pipe = (function () {
         this.lowerBox = this.lowerPipeDomElement.getBoundingClientRect();
         drawDebugBox(this.upperPipeDomElement, this.upperBox);
         drawDebugBox(this.lowerPipeDomElement, this.lowerBox);
-    };
-    Pipe.prototype.draw = function () {
     };
     Pipe.prototype.intersectsWith = function (box) {
         return isBoxIntersecting(this.upperBox, box) || isBoxIntersecting(this.lowerBox, box);

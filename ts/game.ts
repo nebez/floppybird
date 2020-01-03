@@ -78,6 +78,7 @@ interface GameHtmlElements {
 class Game {
     protected domElements: GameHtmlElements;
     protected bird: Bird;
+    protected land: Land;
     protected pipes: PipeManager;
     protected gameLoop: ReturnType<typeof setInterval> | undefined;
     protected renderingLoop: ReturnType<typeof requestAnimationFrame> | undefined;
@@ -90,6 +91,7 @@ class Game {
             flightAreaBox: domElements.flightArea.getBoundingClientRect(),
         });
         this.pipes = new PipeManager(domElements.flightArea);
+        this.land = new Land(domElements.land);
     }
 
     public start() {
@@ -107,7 +109,7 @@ class Game {
         this.bird.tick();
         this.pipes.tick(now);
 
-        if (this.pipes.intersectsWith(this.bird.box)) {
+        if (this.pipes.intersectsWith(this.bird.box) || this.land.intersectsWith(this.bird.box)) {
             console.log('HIT');
         }
     }
@@ -184,6 +186,22 @@ class Bird implements Tickable, Drawable {
     }
 }
 
+class Land {
+    public domElement: HTMLElement;
+    public box: BoundingBox;
+
+    constructor(domElement: HTMLElement) {
+        this.domElement = domElement;
+        this.box = domElement.getBoundingClientRect();
+
+        drawDebugBox(this.domElement, this.box);
+    }
+
+    public intersectsWith(box: BoundingBox) {
+        return isBoxIntersecting(this.box, box);
+    }
+}
+
 class Pipe implements Tickable {
     public domElement: HTMLDivElement;
     protected upperPipeDomElement: HTMLDivElement;
@@ -218,10 +236,6 @@ class Pipe implements Tickable {
         // TODO: This should be in draw not tick. Find a way to move it after.
         drawDebugBox(this.upperPipeDomElement, this.upperBox);
         drawDebugBox(this.lowerPipeDomElement, this.lowerBox);
-    }
-
-    public draw() {
-        // drawDebugBox(this.domElement, this.upperBox);
     }
 
     public intersectsWith(box: BoundingBox) {
