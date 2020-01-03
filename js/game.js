@@ -72,6 +72,12 @@ var log = function () {
 var toRad = function (degrees) {
     return degrees * Math.PI / 180;
 };
+var isBoxIntersecting = function (a, b) {
+    return (a.x <= (b.x + b.width) &&
+        b.x <= (a.x + a.width) &&
+        a.y <= (b.y + b.height) &&
+        b.y <= (a.y + a.height));
+};
 var debugBoxes = new Map();
 var drawDebugBox = function (element, box) {
     if (!debugBoxes.has(element)) {
@@ -104,7 +110,7 @@ var Game = (function () {
     Game.prototype.start = function () {
         var _this = this;
         this.gameLoop = setInterval(this.tick.bind(this), 1000 / 60);
-        requestAnimationFrame(this.draw.bind(this));
+        this.renderingLoop = requestAnimationFrame(this.draw.bind(this));
         this.bird.jump();
         setInterval(function () { return _this.bird.jump(); }, 574);
     };
@@ -112,9 +118,12 @@ var Game = (function () {
         var now = Date.now();
         this.bird.tick();
         this.pipes.tick(now);
+        if (this.pipes.intersectsWith(this.bird.box)) {
+            console.log('HIT');
+        }
     };
     Game.prototype.draw = function () {
-        requestAnimationFrame(this.draw.bind(this));
+        this.renderingLoop = requestAnimationFrame(this.draw.bind(this));
         this.bird.draw();
     };
     return Game;
@@ -185,6 +194,9 @@ var Pipe = (function () {
     };
     Pipe.prototype.draw = function () {
     };
+    Pipe.prototype.intersectsWith = function (box) {
+        return isBoxIntersecting(this.upperBox, box) || isBoxIntersecting(this.lowerBox, box);
+    };
     return Pipe;
 }());
 var PipeManager = (function () {
@@ -211,6 +223,9 @@ var PipeManager = (function () {
             }
             return true;
         });
+    };
+    PipeManager.prototype.intersectsWith = function (box) {
+        return this.pipes.find(function (pipe) { return pipe.intersectsWith(box); }) != null;
     };
     return PipeManager;
 }());

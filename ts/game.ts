@@ -12,6 +12,15 @@ const toRad = (degrees: number) => {
     return degrees * Math.PI / 180;
 }
 
+const isBoxIntersecting = (a: BoundingBox, b: BoundingBox) => {
+    return (
+        a.x <= (b.x + b.width) &&
+        b.x <= (a.x + a.width) &&
+        a.y <= (b.y + b.height) &&
+        b.y <= (a.y + a.height)
+    );
+}
+
 // TODO put this in the game class or something?
 const debugBoxes = new Map<HTMLElement, HTMLDivElement>();
 
@@ -85,7 +94,7 @@ class Game {
 
     public start() {
         this.gameLoop = setInterval(this.tick.bind(this), 1000 / 60);
-        requestAnimationFrame(this.draw.bind(this));
+        this.renderingLoop = requestAnimationFrame(this.draw.bind(this));
 
         // todo: this is a test
         this.bird.jump();
@@ -97,10 +106,14 @@ class Game {
 
         this.bird.tick();
         this.pipes.tick(now);
+
+        if (this.pipes.intersectsWith(this.bird.box)) {
+            console.log('HIT');
+        }
     }
 
     protected draw() {
-        requestAnimationFrame(this.draw.bind(this));
+        this.renderingLoop = requestAnimationFrame(this.draw.bind(this));
 
         this.bird.draw();
     }
@@ -114,7 +127,7 @@ class Bird implements Tickable, Drawable {
     protected velocity = 0;
     protected position = 180;
     protected rotation = 0;
-    protected box: BoundingBox = { x: 60, y: 180, width: 34, height: 24 };
+    public box: BoundingBox = { x: 60, y: 180, width: 34, height: 24 };
 
     constructor(domElement: HTMLElement, flyingProperties: FlyingProperties) {
         this.domElement = domElement;
@@ -210,6 +223,10 @@ class Pipe implements Tickable {
     public draw() {
         // drawDebugBox(this.domElement, this.upperBox);
     }
+
+    public intersectsWith(box: BoundingBox) {
+        return isBoxIntersecting(this.upperBox, box) || isBoxIntersecting(this.lowerBox, box);
+    }
 }
 
 class PipeManager implements Tickable {
@@ -246,6 +263,10 @@ class PipeManager implements Tickable {
 
             return true;
         });
+    }
+
+    public intersectsWith(box: BoundingBox) {
+        return this.pipes.find(pipe => pipe.intersectsWith(box)) != null;
     }
 }
 
