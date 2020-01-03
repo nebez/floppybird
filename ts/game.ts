@@ -21,10 +21,14 @@ const isBoxIntersecting = (a: BoundingBox, b: BoundingBox) => {
     );
 }
 
-// TODO put this in the game class or something?
 const debugBoxes = new Map<HTMLElement, HTMLDivElement>();
+const debuggerEnabled = true;
 
 const drawDebugBox = (element: HTMLElement, box: BoundingBox) => {
+    if (!debuggerEnabled) {
+        return;
+    }
+
     if (!debugBoxes.has(element)) {
         const newDebugBox = document.createElement('div');
         newDebugBox.className = 'boundingbox';

@@ -79,7 +79,11 @@ var isBoxIntersecting = function (a, b) {
         b.y <= (a.y + a.height));
 };
 var debugBoxes = new Map();
+var debuggerEnabled = true;
 var drawDebugBox = function (element, box) {
+    if (!debuggerEnabled) {
+        return;
+    }
     if (!debugBoxes.has(element)) {
         var newDebugBox = document.createElement('div');
         newDebugBox.className = 'boundingbox';
