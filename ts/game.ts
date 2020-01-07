@@ -24,23 +24,23 @@ const isBoxIntersecting = (a: BoundingBox, b: BoundingBox) => {
 const debugBoxes = new Map<HTMLElement, HTMLDivElement>();
 const debuggerEnabled = true;
 
-const drawDebugBox = (element: HTMLElement, box: BoundingBox) => {
+const drawDebugBox = (key: HTMLElement, box: BoundingBox) => {
     if (!debuggerEnabled) {
         return;
     }
 
-    if (!debugBoxes.has(element)) {
+    if (!debugBoxes.has(key)) {
         const newDebugBox = document.createElement('div');
         newDebugBox.className = 'boundingbox';
         const debugContainer = document.getElementById('debug');
         debugContainer!.appendChild(newDebugBox);
-        debugBoxes.set(element, newDebugBox);
+        debugBoxes.set(key, newDebugBox);
     }
 
-    const boudingBox = debugBoxes.get(element);
+    const boudingBox = debugBoxes.get(key);
 
     if (boudingBox == null) {
-        log(`couldn't create a debug box for ${element}`);
+        log(`couldn't create a debug box for ${key}`);
         return;
     }
 
