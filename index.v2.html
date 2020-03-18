@@ -18,7 +18,7 @@
 
       <!-- Style sheets -->
       <link href="css/reset.css" rel="stylesheet">
-      <link href="css/main.css" rel="stylesheet">
+      <link href="css/main.v2.css" rel="stylesheet">
    </head>
    <body>
       <div id="gamecontainer">
@@ -43,7 +43,8 @@
                   <!-- Pipes go here! -->
                </div>
             </div>
-            <div id="land" class="animated"><div id="debug"></div></div>
+            <div id="land" class="animated"></div>
+            <div id="debug"></div>
          </div>
       </div>
       <div id="footer">
@@ -51,12 +52,9 @@
          <a href="http://nebezb.com/">recreated by nebez briefkani</a>
          <a href="http://github.com/nebez/floppybird/">view github project</a>
       </div>
-      <div class="boundingbox" id="playerbox"></div>
-      <div class="boundingbox" id="pipebox"></div>
 
-      <script src="js/jquery.min.js"></script>
-      <script src="js/jquery.transit.min.js"></script>
-      <script src="js/buzz.min.js"></script>
-      <script src="js/main.js"></script>
+      <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.1.3/howler.core.min.js"></script>
+      <script src="js/game.js"></script>
    </body>
 </html>
