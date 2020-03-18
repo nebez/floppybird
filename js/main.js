@@ -83,7 +83,7 @@ function showSplash()
    score = 0;
 
    //update the player in preparation for the next game
-   $("#player").css({ y: 0, x: 0});
+   $("#player").css({ y: 0, x: 0 });
    updatePlayer($("#player"));
 
    soundSwoosh.stop();
