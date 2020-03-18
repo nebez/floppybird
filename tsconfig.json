@@ -30,6 +30,7 @@
     "noFallthroughCasesInSwitch": true        /* Report errors for fallthrough cases in switch statement. */
   },
   "include": [
-    "ts/game.ts"
+    "ts/game.ts",
+    "ts/howler.d.ts"
   ]
 }

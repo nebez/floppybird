@@ -55,6 +55,20 @@ var __spread = (this && this.__spread) || function () {
     for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
     return ar;
 };
+var GameState;
+(function (GameState) {
+    GameState[GameState["SplashScreen"] = 0] = "SplashScreen";
+    GameState[GameState["Playing"] = 1] = "Playing";
+    GameState[GameState["PlayerDying"] = 2] = "PlayerDying";
+    GameState[GameState["ScoreScreen"] = 3] = "ScoreScreen";
+})(GameState || (GameState = {}));
+var sounds = {
+    jump: new Howl({ src: ['assets/sounds/sfx_wing.ogg'], volume: 0.3 }),
+    score: new Howl({ src: ['assets/sounds/sfx_point.ogg'], volume: 0.3 }),
+    hit: new Howl({ src: ['assets/sounds/sfx_hit.ogg'], volume: 0.3 }),
+    die: new Howl({ src: ['assets/sounds/sfx_die.ogg'], volume: 0.3 }),
+    swoosh: new Howl({ src: ['assets/sounds/sfx_swooshing.ogg'], volume: 0.3 }),
+};
 var wait = function (time) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         return [2, new Promise(function (resolve) {
@@ -79,21 +93,21 @@ var isBoxIntersecting = function (a, b) {
         b.y <= (a.y + a.height));
 };
 var debugBoxes = new Map();
-var debuggerEnabled = true;
-var drawDebugBox = function (element, box) {
+var debuggerEnabled = false;
+var drawDebugBox = function (key, box) {
     if (!debuggerEnabled) {
         return;
     }
-    if (!debugBoxes.has(element)) {
+    if (!debugBoxes.has(key)) {
         var newDebugBox = document.createElement('div');
         newDebugBox.className = 'boundingbox';
         var debugContainer = document.getElementById('debug');
         debugContainer.appendChild(newDebugBox);
-        debugBoxes.set(element, newDebugBox);
+        debugBoxes.set(key, newDebugBox);
     }
-    var boudingBox = debugBoxes.get(element);
+    var boudingBox = debugBoxes.get(key);
     if (boudingBox == null) {
-        log("couldn't create a debug box for " + element);
+        log("couldn't create a debug box for " + key);
         return;
     }
     boudingBox.style.top = box.y + "px";
@@ -111,24 +125,68 @@ var Game = (function () {
         });
         this.pipes = new PipeManager(domElements.flightArea);
         this.land = new Land(domElements.land);
+        this.state = GameState.SplashScreen;
     }
+    Game.prototype.onKeyboardEvent = function (ev) {
+        if (ev.keyCode !== 32) {
+            return;
+        }
+        if (this.state === GameState.Playing) {
+            this.bird.jump();
+        }
+        else if (this.state === GameState.SplashScreen) {
+            this.start();
+        }
+        else if (this.state === GameState.ScoreScreen) {
+        }
+    };
+    Game.prototype.onScreenTouch = function () {
+        if (this.state === GameState.SplashScreen) {
+            this.start();
+        }
+        else if (this.state === GameState.Playing) {
+            this.bird.jump();
+        }
+    };
     Game.prototype.start = function () {
-        var _this = this;
+        this.state = GameState.Playing;
         this.gameLoop = setInterval(this.tick.bind(this), 1000 / 60);
-        this.renderingLoop = requestAnimationFrame(this.draw.bind(this));
-        this.bird.jump();
-        setInterval(function () { return _this.bird.jump(); }, 574);
+        requestAnimationFrame(this.draw.bind(this));
+    };
+    Game.prototype.die = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        this.state = GameState.PlayerDying;
+                        clearInterval(this.gameLoop);
+                        Array.from(document.getElementsByClassName('animated')).forEach(function (e) {
+                            e.style.animationPlayState = 'paused';
+                            e.style.webkitAnimationPlayState = 'paused';
+                        });
+                        return [4, this.bird.die()];
+                    case 1:
+                        _a.sent();
+                        this.state = GameState.ScoreScreen;
+                        return [4, wait(500)];
+                    case 2:
+                        _a.sent();
+                        sounds.swoosh.play();
+                        return [2];
+                }
+            });
+        });
     };
     Game.prototype.tick = function () {
         var now = Date.now();
         this.bird.tick();
         this.pipes.tick(now);
         if (this.pipes.intersectsWith(this.bird.box) || this.land.intersectsWith(this.bird.box)) {
-            console.log('HIT');
+            this.die();
         }
     };
     Game.prototype.draw = function () {
-        this.renderingLoop = requestAnimationFrame(this.draw.bind(this));
+        requestAnimationFrame(this.draw.bind(this));
         this.bird.draw();
     };
     return Game;
@@ -166,6 +224,29 @@ var Bird = (function () {
     };
     Bird.prototype.jump = function () {
         this.velocity = this.flyingProperties.jumpVelocity;
+        sounds.jump.play();
+    };
+    Bird.prototype.die = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        this.domElement.style.transition = "\n            transform 1s cubic-bezier(0.65, 0, 0.35, 1)\n        ";
+                        this.position = this.flyingProperties.flightAreaBox.height - this.height;
+                        this.rotation = 90;
+                        sounds.hit.play();
+                        return [4, wait(500)];
+                    case 1:
+                        _a.sent();
+                        sounds.die.play();
+                        return [4, wait(500)];
+                    case 2:
+                        _a.sent();
+                        this.domElement.style.transition = '';
+                        return [2];
+                }
+            });
+        });
     };
     Bird.prototype.draw = function () {
         drawDebugBox(this.domElement, this.box);
@@ -232,6 +313,7 @@ var PipeManager = (function () {
         this.pipeAreaDomElement.appendChild(pipe.domElement);
         this.pipes = this.pipes.filter(function (pipe) {
             if (pipe.isOffScreen()) {
+                log('pruning a pipe');
                 pipe.domElement.remove();
                 return false;
             }
@@ -251,6 +333,13 @@ var PipeManager = (function () {
         throw new Error('Missing an element');
     }
     var game = new Game({ bird: bird, land: land, flightArea: flightArea });
+    document.onkeydown = game.onKeyboardEvent.bind(game);
+    if ('ontouchstart' in document) {
+        document.ontouchstart = game.onScreenTouch.bind(game);
+    }
+    else {
+        document.onmousedown = game.onScreenTouch.bind(game);
+    }
     game.start();
 })();
 //# sourceMappingURL=game.js.map

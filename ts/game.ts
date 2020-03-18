@@ -1,3 +1,18 @@
+enum GameState {
+    SplashScreen,
+    Playing,
+    PlayerDying,
+    ScoreScreen,
+}
+
+const sounds = {
+    jump: new Howl({ src: ['assets/sounds/sfx_wing.ogg'], volume: 0.3 }),
+    score: new Howl({ src: ['assets/sounds/sfx_point.ogg'], volume: 0.3 }),
+    hit: new Howl({ src: ['assets/sounds/sfx_hit.ogg'], volume: 0.3 }),
+    die: new Howl({ src: ['assets/sounds/sfx_die.ogg'], volume: 0.3 }),
+    swoosh: new Howl({ src: ['assets/sounds/sfx_swooshing.ogg'], volume: 0.3 }),
+};
+
 const wait = async (time: number) => {
     return new Promise(resolve => {
         setTimeout(resolve, time);
@@ -63,16 +78,6 @@ interface BoundingBox {
     height: number;
 }
 
-// Ticking happens on the game loop
-interface Tickable {
-    tick(now: number): void;
-}
-
-// Drawing happens on the rendering loop
-interface Drawable {
-    draw(): void;
-}
-
 interface GameHtmlElements {
     bird: HTMLElement;
     land: HTMLElement;
@@ -84,8 +89,8 @@ class Game {
     protected bird: Bird;
     protected land: Land;
     protected pipes: PipeManager;
+    protected state: GameState;
     protected gameLoop: ReturnType<typeof setInterval> | undefined;
-    protected renderingLoop: ReturnType<typeof requestAnimationFrame> | undefined;
 
     constructor(domElements: GameHtmlElements) {
         this.domElements = domElements;
@@ -96,15 +101,54 @@ class Game {
         });
         this.pipes = new PipeManager(domElements.flightArea);
         this.land = new Land(domElements.land);
+        this.state = GameState.SplashScreen;
+    }
+
+    public onKeyboardEvent(ev: KeyboardEvent) {
+        if (ev.keyCode !== 32) {
+            return;
+        }
+
+        if (this.state === GameState.Playing) {
+            this.bird.jump();
+        } else if (this.state === GameState.SplashScreen) {
+            this.start();
+        } else if (this.state === GameState.ScoreScreen) {
+            // this.replay;
+        }
+    }
+
+    public onScreenTouch() {
+        if (this.state === GameState.SplashScreen) {
+            this.start();
+        } else if (this.state === GameState.Playing) {
+            this.bird.jump();
+        }
     }
 
     public start() {
+        this.state = GameState.Playing;
         this.gameLoop = setInterval(this.tick.bind(this), 1000 / 60);
-        this.renderingLoop = requestAnimationFrame(this.draw.bind(this));
+        requestAnimationFrame(this.draw.bind(this));
+    }
 
-        // todo: this is a test
-        this.bird.jump();
-        setInterval(() => this.bird.jump(), 574);
+    public async die() {
+        this.state = GameState.PlayerDying;
+        clearInterval(this.gameLoop);
+
+        // Find everything that's animated and stop it.
+        Array.from(document.getElementsByClassName('animated')).forEach(e => {
+            (e as HTMLElement).style.animationPlayState = 'paused';
+            (e as HTMLElement).style.webkitAnimationPlayState = 'paused';
+        });
+
+        await this.bird.die();
+
+        this.state = GameState.ScoreScreen;
+
+        await wait(500);
+
+        sounds.swoosh.play();
     }
 
     protected tick() {
@@ -114,18 +158,18 @@ class Game {
         this.pipes.tick(now);
 
         if (this.pipes.intersectsWith(this.bird.box) || this.land.intersectsWith(this.bird.box)) {
-            console.log('HIT');
+            this.die();
         }
     }
 
     protected draw() {
-        this.renderingLoop = requestAnimationFrame(this.draw.bind(this));
+        requestAnimationFrame(this.draw.bind(this));
 
         this.bird.draw();
     }
 }
 
-class Bird implements Tickable, Drawable {
+class Bird {
     protected domElement: HTMLElement;
     protected flyingProperties: FlyingProperties;
     protected width = 34;
@@ -179,10 +223,26 @@ class Bird implements Tickable, Drawable {
 
     public jump() {
         this.velocity = this.flyingProperties.jumpVelocity;
+        sounds.jump.play();
+    }
+
+    public async die() {
+        this.domElement.style.transition = `
+            transform 1s cubic-bezier(0.65, 0, 0.35, 1)
+        `;
+        this.position = this.flyingProperties.flightAreaBox.height - this.height;
+        this.rotation = 90;
+
+        sounds.hit.play();
+        await wait(500);
+        sounds.die.play();
+        await wait(500);
+        this.domElement.style.transition = '';
     }
 
     public draw() {
         drawDebugBox(this.domElement, this.box);
+
         this.domElement.style.transform = `
             translate3d(0px, ${this.position}px, 0px)
             rotate3d(0, 0, 1, ${this.rotation}deg)
@@ -206,7 +266,7 @@ class Land {
     }
 }
 
-class Pipe implements Tickable {
+class Pipe {
     public domElement: HTMLDivElement;
     protected upperPipeDomElement: HTMLDivElement;
     protected lowerPipeDomElement: HTMLDivElement;
@@ -247,7 +307,7 @@ class Pipe implements Tickable {
     }
 }
 
-class PipeManager implements Tickable {
+class PipeManager {
     protected pipeAreaDomElement: HTMLElement;
     protected pipeDelay = 1400;
     protected lastPipeInsertedTimestamp = 0;
@@ -275,6 +335,7 @@ class PipeManager implements Tickable {
 
         this.pipes = this.pipes.filter(pipe => {
             if (pipe.isOffScreen()) {
+                log('pruning a pipe');
                 pipe.domElement.remove();
                 return false;
             }
@@ -298,6 +359,12 @@ class PipeManager implements Tickable {
     }
 
     const game = new Game({ bird, land, flightArea });
+    document.onkeydown = game.onKeyboardEvent.bind(game);
+    if ('ontouchstart' in document) {
+        document.ontouchstart = game.onScreenTouch.bind(game);
+    } else {
+        document.onmousedown = game.onScreenTouch.bind(game);
+    }
     game.start();
 })();
 
