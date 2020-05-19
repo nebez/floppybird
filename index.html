@@ -60,9 +60,18 @@
       <script src="js/main.js"></script>
 
       <script>
-      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-      ga('create', 'UA-48047334-1', 'auto');
-      ga('send', 'pageview');
+      function inIframe() {
+          try {
+              return window.self !== window.top;
+          } catch (e) {
+              return true;
+          }
+      }
+      if (!inIframe() && window.location.hostname == 'nebezb.com') {
+         window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+         ga('create', 'UA-48047334-1', 'auto');
+         ga('send', 'pageview');
+      }
       </script>
       <script async src='https://www.google-analytics.com/analytics.js'></script>
    </body>
