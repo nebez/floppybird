@@ -1,0 +1,23 @@
+{
+  "name": "floppybird",
+  "version": "1.0.0",
+  "description": "<img src=\"screencap.png\" align=\"right\" width=\"250\">",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nebez/floppybird.git"
+  },
+  "author": "Nebez Briefkani <me@nebezb.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/nebez/floppybird/issues"
+  },
+  "homepage": "https://github.com/nebez/floppybird#readme",
+  "dependencies": {
+    "typescript": "^4.4.4"
+  }
+}

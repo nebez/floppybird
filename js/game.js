@@ -51,9 +51,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spread = (this && this.__spread) || function () {
-    for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
-    return ar;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var GameState;
 (function (GameState) {
@@ -81,7 +86,7 @@ var log = function () {
     for (var _i = 0; _i < arguments.length; _i++) {
         args[_i] = arguments[_i];
     }
-    console.log.apply(console, __spread(["[" + Date.now() + "]"], args));
+    console.log.apply(console, __spreadArray(["[" + Date.now() + "]"], __read(args), false));
 };
 var toRad = function (degrees) {
     return degrees * Math.PI / 180;
@@ -93,7 +98,7 @@ var isBoxIntersecting = function (a, b) {
         b.y <= (a.y + a.height));
 };
 var debugBoxes = new Map();
-var debuggerEnabled = false;
+var debuggerEnabled = true;
 var drawDebugBox = function (key, box) {
     if (!debuggerEnabled) {
         return;
