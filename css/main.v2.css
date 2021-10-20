@@ -147,16 +147,27 @@ Screen - Game
 #scoreboard
 {
    position: absolute;
-   display: none;
-   opacity: 0;
    top: 64px;
    left: 43px;
    width: 236px;
    height: 280px;
    background-image: url('../assets/scoreboard.png');
    background-repeat: no-repeat;
-
    z-index: 1000;
+
+   /* Hidden by default, and popped down slightly */
+   visibility: hidden;
+   opacity: 0;
+   transform: translate3d(0px, 40px, 0px);
+
+   transition: all 600ms ease;
+}
+
+#scoreboard.visible
+{
+   visibility: visible;
+   opacity: 1;
+   transform: translate3d(0px, 0px, 0px);
 }
 
 #medal
@@ -202,12 +213,23 @@ Screen - Game
 #replay
 {
    position: absolute;
-   opacity: 0;
    top: 205px;
    left: 61px;
-   height: 115px;
-   width: 70px;
+   height: 70px;
+   width: 115px;
    cursor: pointer;
+
+   /* Hidden by default, and popped down slightly */
+   opacity: 0;
+   transform: translate3d(0px, 40px, 0px);
+   
+   transition: all 600ms ease;
+}
+
+#replay.visible
+{
+   opacity: 1;
+   transform: translate3d(0px, 0px, 0px);
 }
 
 #debug {

@@ -65,7 +65,8 @@ var GameState;
     GameState[GameState["SplashScreen"] = 0] = "SplashScreen";
     GameState[GameState["Playing"] = 1] = "Playing";
     GameState[GameState["PlayerDying"] = 2] = "PlayerDying";
-    GameState[GameState["ScoreScreen"] = 3] = "ScoreScreen";
+    GameState[GameState["PlayerDead"] = 3] = "PlayerDead";
+    GameState[GameState["ScoreScreen"] = 4] = "ScoreScreen";
 })(GameState || (GameState = {}));
 var sounds = {
     jump: new Howl({ src: ['assets/sounds/sfx_wing.ogg'], volume: 0.3 }),
@@ -160,11 +161,12 @@ var Game = (function () {
     };
     Game.prototype.die = function () {
         return __awaiter(this, void 0, void 0, function () {
+            var scoreboard, replay;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        this.state = GameState.PlayerDying;
                         clearInterval(this.gameLoop);
+                        this.state = GameState.PlayerDying;
                         Array.from(document.getElementsByClassName('animated')).forEach(function (e) {
                             e.style.animationPlayState = 'paused';
                             e.style.webkitAnimationPlayState = 'paused';
@@ -172,11 +174,20 @@ var Game = (function () {
                         return [4, this.bird.die()];
                     case 1:
                         _a.sent();
-                        this.state = GameState.ScoreScreen;
+                        this.state = GameState.PlayerDead;
                         return [4, wait(500)];
                     case 2:
                         _a.sent();
+                        this.state = GameState.ScoreScreen;
                         sounds.swoosh.play();
+                        scoreboard = document.getElementById('scoreboard');
+                        scoreboard.classList.add('visible');
+                        return [4, wait(600)];
+                    case 3:
+                        _a.sent();
+                        sounds.swoosh.play();
+                        replay = document.getElementById('replay');
+                        replay.classList.add('visible');
                         return [2];
                 }
             });
@@ -191,7 +202,9 @@ var Game = (function () {
         }
     };
     Game.prototype.draw = function () {
-        requestAnimationFrame(this.draw.bind(this));
+        if (this.state === GameState.Playing) {
+            requestAnimationFrame(this.draw.bind(this));
+        }
         this.bird.draw();
     };
     return Game;

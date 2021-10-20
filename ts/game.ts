@@ -2,6 +2,7 @@ enum GameState {
     SplashScreen,
     Playing,
     PlayerDying,
+    PlayerDead,
     ScoreScreen,
 }
 
@@ -133,8 +134,9 @@ class Game {
     }
 
     public async die() {
-        this.state = GameState.PlayerDying;
         clearInterval(this.gameLoop);
+
+        this.state = GameState.PlayerDying;
 
         // Find everything that's animated and stop it.
         Array.from(document.getElementsByClassName('animated')).forEach(e => {
@@ -144,11 +146,22 @@ class Game {
 
         await this.bird.die();
 
-        this.state = GameState.ScoreScreen;
+        this.state = GameState.PlayerDead;
 
         await wait(500);
 
+        this.state = GameState.ScoreScreen;
         sounds.swoosh.play();
+
+        const scoreboard = document.getElementById('scoreboard')!;
+        scoreboard.classList.add('visible');
+        // The above animation takes 600ms.
+        await wait(600);
+
+        sounds.swoosh.play();
+
+        const replay = document.getElementById('replay')!;
+        replay.classList.add('visible');
     }
 
     protected tick() {
@@ -163,7 +176,9 @@ class Game {
     }
 
     protected draw() {
-        requestAnimationFrame(this.draw.bind(this));
+        if (this.state === GameState.Playing) {
+            requestAnimationFrame(this.draw.bind(this));
+        }
 
         this.bird.draw();
     }
