@@ -117,6 +117,7 @@ interface GameHtmlElements {
     bird: HTMLElement;
     land: HTMLElement;
     flightArea: HTMLElement;
+    replayButton: HTMLElement;
 }
 
 class Game {
@@ -137,16 +138,21 @@ class Game {
         this.pipes = new PipeManager(domElements.flightArea);
         this.land = new Land(domElements.land);
         this.state = GameState.Loading;
+        this.domElements.replayButton.onclick = this.onReplayTouch.bind(this);
 
         requestAnimationFrame(this.draw.bind(this));
     }
 
-    public onScreenTouch() {
+    public onScreenTouch(ev: UIEvent) {
+        // We want to treat keyboard and touch events as the same EXCEPT during
+        // the score screen. If the user is on the score screen, they MUST tap
+        // the replay button or press space bar. Tapping anywhere else on the
+        // screen should be a no-op.
         if (this.state === GameState.Playing) {
             this.bird.jump();
         } else if (this.state === GameState.SplashScreen) {
             this.start();
-        } else if (this.state === GameState.ScoreScreen) {
+        } else if (this.state === GameState.ScoreScreen && ev instanceof KeyboardEvent) {
             this.reset();
         }
     }
@@ -165,6 +171,12 @@ class Game {
     protected set state(newState: GameState) {
         gameDebugger.logStateChange(this._state, newState);
         this._state = newState;
+    }
+
+    protected onReplayTouch() {
+        if (this.state === GameState.ScoreScreen) {
+            this.reset();
+        }
     }
 
     protected async reset() {
@@ -456,15 +468,16 @@ class PipeManager {
     const bird = document.getElementById('player');
     const land = document.getElementById('land');
     const flightArea = document.getElementById('flyarea');
+    const replayButton = document.getElementById('replay');
 
-    if (bird == null || flightArea == null || land == null) {
+    if (bird == null || flightArea == null || land == null || replayButton == null) {
         throw new Error('Missing an element');
     }
 
-    const game = new Game({ bird, land, flightArea });
+    const game = new Game({ bird, land, flightArea, replayButton });
 
     // They can use both the spacebar or screen taps to interact with the game
-    document.onkeydown = (ev: KeyboardEvent) => { ev.keyCode == 32 && game.onScreenTouch(); }
+    document.onkeydown = (ev: KeyboardEvent) => { ev.keyCode == 32 && game.onScreenTouch(ev); }
     if ('ontouchstart' in document) {
         document.ontouchstart = game.onScreenTouch.bind(game);
     } else {
