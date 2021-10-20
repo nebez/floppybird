@@ -62,11 +62,12 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 var GameState;
 (function (GameState) {
-    GameState[GameState["SplashScreen"] = 0] = "SplashScreen";
-    GameState[GameState["Playing"] = 1] = "Playing";
-    GameState[GameState["PlayerDying"] = 2] = "PlayerDying";
-    GameState[GameState["PlayerDead"] = 3] = "PlayerDead";
-    GameState[GameState["ScoreScreen"] = 4] = "ScoreScreen";
+    GameState[GameState["Loading"] = 0] = "Loading";
+    GameState[GameState["SplashScreen"] = 1] = "SplashScreen";
+    GameState[GameState["Playing"] = 2] = "Playing";
+    GameState[GameState["PlayerDying"] = 3] = "PlayerDying";
+    GameState[GameState["PlayerDead"] = 4] = "PlayerDead";
+    GameState[GameState["ScoreScreen"] = 5] = "ScoreScreen";
 })(GameState || (GameState = {}));
 var sounds = {
     jump: new Howl({ src: ['assets/sounds/sfx_wing.ogg'], volume: 0.3 }),
@@ -121,6 +122,14 @@ var drawDebugBox = function (key, box) {
     boudingBox.style.width = box.width + "px";
     boudingBox.style.height = box.height + "px";
 };
+var resetDebugBoxes = function () {
+    debugBoxes.forEach(function (debugBox, pipe) {
+        if (pipe.className.includes('pipe')) {
+            debugBox.remove();
+            debugBoxes.delete(pipe);
+        }
+    });
+};
 var Game = (function () {
     function Game(domElements) {
         this.domElements = domElements;
@@ -131,7 +140,8 @@ var Game = (function () {
         });
         this.pipes = new PipeManager(domElements.flightArea);
         this.land = new Land(domElements.land);
-        this.state = GameState.SplashScreen;
+        this.state = GameState.Loading;
+        requestAnimationFrame(this.draw.bind(this));
     }
     Game.prototype.onKeyboardEvent = function (ev) {
         if (ev.keyCode !== 32) {
@@ -144,6 +154,7 @@ var Game = (function () {
             this.start();
         }
         else if (this.state === GameState.ScoreScreen) {
+            this.reset();
         }
     };
     Game.prototype.onScreenTouch = function () {
@@ -153,11 +164,58 @@ var Game = (function () {
         else if (this.state === GameState.Playing) {
             this.bird.jump();
         }
+        else if (this.state === GameState.ScoreScreen) {
+            this.reset();
+        }
+    };
+    Game.prototype.splash = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var splashImage;
+            return __generator(this, function (_a) {
+                splashImage = document.getElementById('splash');
+                splashImage.classList.add('visible');
+                sounds.swoosh.play();
+                this.state = GameState.SplashScreen;
+                return [2];
+            });
+        });
+    };
+    Game.prototype.reset = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var scoreboard, replay;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        sounds.swoosh.play();
+                        scoreboard = document.getElementById('scoreboard');
+                        scoreboard.classList.add('slide-up');
+                        return [4, wait(750)];
+                    case 1:
+                        _a.sent();
+                        replay = document.getElementById('replay');
+                        replay.classList.remove('visible');
+                        scoreboard.classList.remove('visible', 'slide-up');
+                        if (debuggerEnabled) {
+                            resetDebugBoxes();
+                        }
+                        this.pipes.removeAll();
+                        this.bird.reset();
+                        Array.from(document.getElementsByClassName('animated')).forEach(function (e) {
+                            e.style.animationPlayState = 'running';
+                            e.style.webkitAnimationPlayState = 'running';
+                        });
+                        this.splash();
+                        return [2];
+                }
+            });
+        });
     };
     Game.prototype.start = function () {
+        var splashImage = document.getElementById('splash');
+        splashImage.classList.remove('visible');
         this.state = GameState.Playing;
         this.gameLoop = setInterval(this.tick.bind(this), 1000 / 60);
-        requestAnimationFrame(this.draw.bind(this));
+        this.bird.jump();
     };
     Game.prototype.die = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -202,24 +260,25 @@ var Game = (function () {
         }
     };
     Game.prototype.draw = function () {
-        if (this.state === GameState.Playing) {
-            requestAnimationFrame(this.draw.bind(this));
-        }
+        requestAnimationFrame(this.draw.bind(this));
         this.bird.draw();
     };
     return Game;
 }());
 var Bird = (function () {
     function Bird(domElement, flyingProperties) {
+        this.domElement = domElement;
+        this.flyingProperties = flyingProperties;
+        this.reset();
+    }
+    Bird.prototype.reset = function () {
         this.width = 34;
         this.height = 24;
         this.velocity = 0;
         this.position = 180;
         this.rotation = 0;
         this.box = { x: 60, y: 180, width: 34, height: 24 };
-        this.domElement = domElement;
-        this.flyingProperties = flyingProperties;
-    }
+    };
     Bird.prototype.tick = function () {
         this.velocity += this.flyingProperties.gravity;
         this.rotation = Math.min((this.velocity / 10) * 90, 90);
@@ -341,6 +400,10 @@ var PipeManager = (function () {
     PipeManager.prototype.intersectsWith = function (box) {
         return this.pipes.find(function (pipe) { return pipe.intersectsWith(box); }) != null;
     };
+    PipeManager.prototype.removeAll = function () {
+        this.pipes.forEach(function (pipe) { return pipe.domElement.remove(); });
+        this.pipes = [];
+    };
     return PipeManager;
 }());
 (function () {
@@ -358,6 +421,6 @@ var PipeManager = (function () {
     else {
         document.onmousedown = game.onScreenTouch.bind(game);
     }
-    game.start();
+    game.splash();
 })();
 //# sourceMappingURL=game.js.map

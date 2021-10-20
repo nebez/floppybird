@@ -1,4 +1,5 @@
 enum GameState {
+    Loading,
     SplashScreen,
     Playing,
     PlayerDying,
@@ -66,6 +67,16 @@ const drawDebugBox = (key: HTMLElement, box: BoundingBox) => {
     boudingBox.style.height = `${box.height}px`;
 }
 
+const resetDebugBoxes = () => {
+    // Only pipes need resetting. Land and bird are recycled.
+    debugBoxes.forEach((debugBox, pipe) => {
+        if (pipe.className.includes('pipe')) {
+            debugBox.remove();
+            debugBoxes.delete(pipe);
+        }
+    });
+}
+
 interface FlyingProperties {
     gravity: number;
     jumpVelocity: number;
@@ -102,7 +113,9 @@ class Game {
         });
         this.pipes = new PipeManager(domElements.flightArea);
         this.land = new Land(domElements.land);
-        this.state = GameState.SplashScreen;
+        this.state = GameState.Loading;
+
+        requestAnimationFrame(this.draw.bind(this));
     }
 
     public onKeyboardEvent(ev: KeyboardEvent) {
@@ -115,7 +128,7 @@ class Game {
         } else if (this.state === GameState.SplashScreen) {
             this.start();
         } else if (this.state === GameState.ScoreScreen) {
-            // this.replay;
+            this.reset();
         }
     }
 
@@ -124,13 +137,54 @@ class Game {
             this.start();
         } else if (this.state === GameState.Playing) {
             this.bird.jump();
+        } else if (this.state === GameState.ScoreScreen) {
+            this.reset();
         }
     }
 
+    public async splash() {
+        const splashImage = document.getElementById('splash')!;
+        splashImage.classList.add('visible');
+        sounds.swoosh.play();
+        this.state = GameState.SplashScreen;
+    }
+
+    public async reset() {
+        sounds.swoosh.play();
+
+        const scoreboard = document.getElementById('scoreboard')!;
+        scoreboard.classList.add('slide-up');
+        // The above animation takes 600ms, but let's add a bit more delay
+        await wait(750);
+
+        const replay = document.getElementById('replay')!;
+        replay.classList.remove('visible');
+        scoreboard.classList.remove('visible', 'slide-up');
+
+        if (debuggerEnabled) {
+            resetDebugBoxes();
+        }
+
+        this.pipes.removeAll();
+        this.bird.reset();
+
+        // Find everything that's animated and start it.
+        Array.from(document.getElementsByClassName('animated')).forEach(e => {
+            (e as HTMLElement).style.animationPlayState = 'running';
+            (e as HTMLElement).style.webkitAnimationPlayState = 'running';
+        });
+
+        this.splash();
+    }
+
     public start() {
+        const splashImage = document.getElementById('splash')!;
+        splashImage.classList.remove('visible');
         this.state = GameState.Playing;
         this.gameLoop = setInterval(this.tick.bind(this), 1000 / 60);
-        requestAnimationFrame(this.draw.bind(this));
+
+        // Always start the game with a jump! it's just nicer.
+        this.bird.jump();
     }
 
     public async die() {
@@ -176,9 +230,7 @@ class Game {
     }
 
     protected draw() {
-        if (this.state === GameState.Playing) {
-            requestAnimationFrame(this.draw.bind(this));
-        }
+        requestAnimationFrame(this.draw.bind(this));
 
         this.bird.draw();
     }
@@ -187,16 +239,26 @@ class Game {
 class Bird {
     protected domElement: HTMLElement;
     protected flyingProperties: FlyingProperties;
-    protected width = 34;
-    protected height = 24;
-    protected velocity = 0;
-    protected position = 180;
-    protected rotation = 0;
-    public box: BoundingBox = { x: 60, y: 180, width: 34, height: 24 };
+    protected width!: number;
+    protected height!: number;
+    protected velocity!: number;
+    protected position!: number;
+    protected rotation!: number;
+    public box!: BoundingBox;
 
     constructor(domElement: HTMLElement, flyingProperties: FlyingProperties) {
         this.domElement = domElement;
         this.flyingProperties = flyingProperties;
+        this.reset();
+    }
+
+    public reset() {
+        this.width = 34;
+        this.height = 24;
+        this.velocity = 0;
+        this.position = 180;
+        this.rotation = 0;
+        this.box = { x: 60, y: 180, width: 34, height: 24 };
     }
 
     public tick() {
@@ -362,6 +424,11 @@ class PipeManager {
     public intersectsWith(box: BoundingBox) {
         return this.pipes.find(pipe => pipe.intersectsWith(box)) != null;
     }
+
+    public removeAll() {
+        this.pipes.forEach(pipe => pipe.domElement.remove());
+        this.pipes = [];
+    }
 }
 
 (function() {
@@ -380,6 +447,6 @@ class PipeManager {
     } else {
         document.onmousedown = game.onScreenTouch.bind(game);
     }
-    game.start();
+    game.splash();
 })();
 
