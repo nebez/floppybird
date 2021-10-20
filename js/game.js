@@ -99,37 +99,55 @@ var isBoxIntersecting = function (a, b) {
         a.y <= (b.y + b.height) &&
         b.y <= (a.y + a.height));
 };
-var debugBoxes = new Map();
-var debuggerEnabled = true;
-var drawDebugBox = function (key, box) {
-    if (!debuggerEnabled) {
-        return;
+var GameDebugger = (function () {
+    function GameDebugger(enabled) {
+        this.domBoxes = new Map();
+        this.domState = document.getElementById('debug-state');
+        this.enabled = enabled;
     }
-    if (!debugBoxes.has(key)) {
-        var newDebugBox = document.createElement('div');
-        newDebugBox.className = 'boundingbox';
-        var debugContainer = document.getElementById('debug');
-        debugContainer.appendChild(newDebugBox);
-        debugBoxes.set(key, newDebugBox);
-    }
-    var boudingBox = debugBoxes.get(key);
-    if (boudingBox == null) {
-        log("couldn't create a debug box for " + key);
-        return;
-    }
-    boudingBox.style.top = box.y + "px";
-    boudingBox.style.left = box.x + "px";
-    boudingBox.style.width = box.width + "px";
-    boudingBox.style.height = box.height + "px";
-};
-var resetDebugBoxes = function () {
-    debugBoxes.forEach(function (debugBox, pipe) {
-        if (pipe.className.includes('pipe')) {
-            debugBox.remove();
-            debugBoxes.delete(pipe);
+    GameDebugger.prototype.drawBox = function (key, box) {
+        if (!this.enabled) {
+            return;
         }
-    });
-};
+        if (!this.domBoxes.has(key)) {
+            var newDebugBox = document.createElement('div');
+            newDebugBox.className = 'boundingbox';
+            var debugContainer = document.getElementById('debug');
+            debugContainer.appendChild(newDebugBox);
+            this.domBoxes.set(key, newDebugBox);
+        }
+        var boudingBox = this.domBoxes.get(key);
+        if (boudingBox == null) {
+            log("couldn't create a debug box for " + key);
+            return;
+        }
+        boudingBox.style.top = box.y + "px";
+        boudingBox.style.left = box.x + "px";
+        boudingBox.style.width = box.width + "px";
+        boudingBox.style.height = box.height + "px";
+    };
+    GameDebugger.prototype.resetBoxes = function () {
+        var _this = this;
+        if (!this.enabled) {
+            return;
+        }
+        this.domBoxes.forEach(function (debugBox, pipe) {
+            if (pipe.className.includes('pipe')) {
+                debugBox.remove();
+                _this.domBoxes.delete(pipe);
+            }
+        });
+    };
+    GameDebugger.prototype.logStateChange = function (oldState, newState) {
+        if (!this.enabled) {
+            return;
+        }
+        log('Changing state', GameState[oldState], GameState[newState]);
+        this.domState.innerText = GameState[newState];
+    };
+    return GameDebugger;
+}());
+var gameDebugger = new GameDebugger(true);
 var Game = (function () {
     function Game(domElements) {
         this.domElements = domElements;
@@ -148,26 +166,12 @@ var Game = (function () {
             return this._state;
         },
         set: function (newState) {
-            log('Changing state', GameState[this._state], GameState[newState]);
+            gameDebugger.logStateChange(this._state, newState);
             this._state = newState;
         },
         enumerable: false,
         configurable: true
     });
-    Game.prototype.onKeyboardEvent = function (ev) {
-        if (ev.keyCode !== 32) {
-            return;
-        }
-        if (this.state === GameState.Playing) {
-            this.bird.jump();
-        }
-        else if (this.state === GameState.SplashScreen) {
-            this.start();
-        }
-        else if (this.state === GameState.ScoreScreen) {
-            this.reset();
-        }
-    };
     Game.prototype.onScreenTouch = function () {
         if (this.state === GameState.Playing) {
             this.bird.jump();
@@ -207,9 +211,7 @@ var Game = (function () {
                         replay = document.getElementById('replay');
                         replay.classList.remove('visible');
                         scoreboard.classList.remove('visible', 'slide-up');
-                        if (debuggerEnabled) {
-                            resetDebugBoxes();
-                        }
+                        gameDebugger.resetBoxes();
                         this.pipes.removeAll();
                         this.bird.reset();
                         Array.from(document.getElementsByClassName('animated')).forEach(function (e) {
@@ -341,7 +343,7 @@ var Bird = (function () {
         });
     };
     Bird.prototype.draw = function () {
-        drawDebugBox(this.domElement, this.box);
+        gameDebugger.drawBox(this.domElement, this.box);
         this.domElement.style.transform = "\n            translate3d(0px, " + this.position + "px, 0px)\n            rotate3d(0, 0, 1, " + this.rotation + "deg)\n        ";
     };
     return Bird;
@@ -350,7 +352,7 @@ var Land = (function () {
     function Land(domElement) {
         this.domElement = domElement;
         this.box = domElement.getBoundingClientRect();
-        drawDebugBox(this.domElement, this.box);
+        gameDebugger.drawBox(this.domElement, this.box);
     }
     Land.prototype.intersectsWith = function (box) {
         return isBoxIntersecting(this.box, box);
@@ -378,8 +380,8 @@ var Pipe = (function () {
     Pipe.prototype.tick = function () {
         this.upperBox = this.upperPipeDomElement.getBoundingClientRect();
         this.lowerBox = this.lowerPipeDomElement.getBoundingClientRect();
-        drawDebugBox(this.upperPipeDomElement, this.upperBox);
-        drawDebugBox(this.lowerPipeDomElement, this.lowerBox);
+        gameDebugger.drawBox(this.upperPipeDomElement, this.upperBox);
+        gameDebugger.drawBox(this.lowerPipeDomElement, this.lowerBox);
     };
     Pipe.prototype.intersectsWith = function (box) {
         return isBoxIntersecting(this.upperBox, box) || isBoxIntersecting(this.lowerBox, box);
@@ -429,7 +431,7 @@ var PipeManager = (function () {
         throw new Error('Missing an element');
     }
     var game = new Game({ bird: bird, land: land, flightArea: flightArea });
-    document.onkeydown = game.onKeyboardEvent.bind(game);
+    document.onkeydown = function (ev) { ev.keyCode == 32 && game.onScreenTouch(); };
     if ('ontouchstart' in document) {
         document.ontouchstart = game.onScreenTouch.bind(game);
     }

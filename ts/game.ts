@@ -38,44 +38,66 @@ const isBoxIntersecting = (a: BoundingBox, b: BoundingBox) => {
     );
 }
 
-const debugBoxes = new Map<HTMLElement, HTMLDivElement>();
-const debuggerEnabled = true;
+class GameDebugger {
+    protected domBoxes = new Map<HTMLElement, HTMLDivElement>();
+    protected enabled;
+    protected domState = document.getElementById('debug-state')!;
 
-const drawDebugBox = (key: HTMLElement, box: BoundingBox) => {
-    if (!debuggerEnabled) {
-        return;
+    constructor(enabled: boolean) {
+        this.enabled = enabled;
     }
 
-    if (!debugBoxes.has(key)) {
-        const newDebugBox = document.createElement('div');
-        newDebugBox.className = 'boundingbox';
-        const debugContainer = document.getElementById('debug');
-        debugContainer!.appendChild(newDebugBox);
-        debugBoxes.set(key, newDebugBox);
-    }
-
-    const boudingBox = debugBoxes.get(key);
-
-    if (boudingBox == null) {
-        log(`couldn't create a debug box for ${key}`);
-        return;
-    }
-
-    boudingBox.style.top = `${box.y}px`;
-    boudingBox.style.left = `${box.x}px`;
-    boudingBox.style.width = `${box.width}px`;
-    boudingBox.style.height = `${box.height}px`;
-}
-
-const resetDebugBoxes = () => {
-    // Only pipes need resetting. Land and bird are recycled.
-    debugBoxes.forEach((debugBox, pipe) => {
-        if (pipe.className.includes('pipe')) {
-            debugBox.remove();
-            debugBoxes.delete(pipe);
+    public drawBox(key: HTMLElement, box: BoundingBox) {
+        if (!this.enabled) {
+            return;
         }
-    });
+
+        if (!this.domBoxes.has(key)) {
+            const newDebugBox = document.createElement('div');
+            newDebugBox.className = 'boundingbox';
+            const debugContainer = document.getElementById('debug');
+            debugContainer!.appendChild(newDebugBox);
+            this.domBoxes.set(key, newDebugBox);
+        }
+
+        const boudingBox = this.domBoxes.get(key);
+
+        if (boudingBox == null) {
+            log(`couldn't create a debug box for ${key}`);
+            return;
+        }
+
+        boudingBox.style.top = `${box.y}px`;
+        boudingBox.style.left = `${box.x}px`;
+        boudingBox.style.width = `${box.width}px`;
+        boudingBox.style.height = `${box.height}px`;
+    }
+
+    public resetBoxes() {
+        if (!this.enabled) {
+            return;
+        }
+
+        // Only pipes need resetting. Land and bird are recycled.
+        this.domBoxes.forEach((debugBox, pipe) => {
+            if (pipe.className.includes('pipe')) {
+                debugBox.remove();
+                this.domBoxes.delete(pipe);
+            }
+        });
+    }
+
+    public logStateChange(oldState: GameState, newState: GameState) {
+        if (!this.enabled) {
+            return;
+        }
+
+        log('Changing state', GameState[oldState], GameState[newState]);
+        this.domState.innerText = GameState[newState];
+    }
 }
+
+const gameDebugger = new GameDebugger(true);
 
 interface FlyingProperties {
     gravity: number;
@@ -119,7 +141,7 @@ class Game {
     }
 
     protected set state(newState: GameState) {
-        log('Changing state', GameState[this._state], GameState[newState]);
+        gameDebugger.logStateChange(this._state, newState);
         this._state = newState;
     }
 
@@ -157,9 +179,7 @@ class Game {
         replay.classList.remove('visible');
         scoreboard.classList.remove('visible', 'slide-up');
 
-        if (debuggerEnabled) {
-            resetDebugBoxes();
-        }
+        gameDebugger.resetBoxes();
 
         this.pipes.removeAll();
         this.bird.reset();
@@ -318,7 +338,7 @@ class Bird {
     }
 
     public draw() {
-        drawDebugBox(this.domElement, this.box);
+        gameDebugger.drawBox(this.domElement, this.box);
 
         this.domElement.style.transform = `
             translate3d(0px, ${this.position}px, 0px)
@@ -335,7 +355,7 @@ class Land {
         this.domElement = domElement;
         this.box = domElement.getBoundingClientRect();
 
-        drawDebugBox(this.domElement, this.box);
+        gameDebugger.drawBox(this.domElement, this.box);
     }
 
     public intersectsWith(box: BoundingBox) {
@@ -375,8 +395,8 @@ class Pipe {
         this.lowerBox = this.lowerPipeDomElement.getBoundingClientRect();
 
         // TODO: This should be in draw not tick. Find a way to move it after.
-        drawDebugBox(this.upperPipeDomElement, this.upperBox);
-        drawDebugBox(this.lowerPipeDomElement, this.lowerBox);
+        gameDebugger.drawBox(this.upperPipeDomElement, this.upperBox);
+        gameDebugger.drawBox(this.lowerPipeDomElement, this.lowerBox);
     }
 
     public intersectsWith(box: BoundingBox) {

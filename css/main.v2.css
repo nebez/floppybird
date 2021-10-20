@@ -245,9 +245,18 @@ Screen - Game
    transform: translate3d(0px, 0px, 0px);
 }
 
-#debug {
+#debug
+{
    position: relative;
    z-index: 9999;
+}
+
+#debug-state
+{
+   position: absolute;
+   top: 5px;
+   left: 5px;
+   font-size: 14px;
 }
 
 .boundingbox
