@@ -127,20 +127,6 @@ class Game {
         return this._state;
     }
 
-    public onKeyboardEvent(ev: KeyboardEvent) {
-        if (ev.keyCode !== 32) {
-            return;
-        }
-
-        if (this.state === GameState.Playing) {
-            this.bird.jump();
-        } else if (this.state === GameState.SplashScreen) {
-            this.start();
-        } else if (this.state === GameState.ScoreScreen) {
-            this.reset();
-        }
-    }
-
     public onScreenTouch() {
         if (this.state === GameState.Playing) {
             this.bird.jump();
@@ -455,7 +441,9 @@ class PipeManager {
     }
 
     const game = new Game({ bird, land, flightArea });
-    document.onkeydown = game.onKeyboardEvent.bind(game);
+
+    // They can use both the spacebar or screen taps to interact with the game
+    document.onkeydown = (ev: KeyboardEvent) => { ev.keyCode == 32 && game.onScreenTouch(); }
     if ('ontouchstart' in document) {
         document.ontouchstart = game.onScreenTouch.bind(game);
     } else {
