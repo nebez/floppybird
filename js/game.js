@@ -143,6 +143,17 @@ var Game = (function () {
         this.state = GameState.Loading;
         requestAnimationFrame(this.draw.bind(this));
     }
+    Object.defineProperty(Game.prototype, "state", {
+        get: function () {
+            return this._state;
+        },
+        set: function (newState) {
+            log('Changing state', GameState[this._state], GameState[newState]);
+            this._state = newState;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Game.prototype.onKeyboardEvent = function (ev) {
         if (ev.keyCode !== 32) {
             return;
@@ -158,11 +169,11 @@ var Game = (function () {
         }
     };
     Game.prototype.onScreenTouch = function () {
-        if (this.state === GameState.SplashScreen) {
-            this.start();
-        }
-        else if (this.state === GameState.Playing) {
+        if (this.state === GameState.Playing) {
             this.bird.jump();
+        }
+        else if (this.state === GameState.SplashScreen) {
+            this.start();
         }
         else if (this.state === GameState.ScoreScreen) {
             this.reset();
@@ -186,6 +197,7 @@ var Game = (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        this.state = GameState.Loading;
                         sounds.swoosh.play();
                         scoreboard = document.getElementById('scoreboard');
                         scoreboard.classList.add('slide-up');
@@ -236,7 +248,6 @@ var Game = (function () {
                         return [4, wait(500)];
                     case 2:
                         _a.sent();
-                        this.state = GameState.ScoreScreen;
                         sounds.swoosh.play();
                         scoreboard = document.getElementById('scoreboard');
                         scoreboard.classList.add('visible');
@@ -246,6 +257,10 @@ var Game = (function () {
                         sounds.swoosh.play();
                         replay = document.getElementById('replay');
                         replay.classList.add('visible');
+                        return [4, wait(300)];
+                    case 4:
+                        _a.sent();
+                        this.state = GameState.ScoreScreen;
                         return [2];
                 }
             });

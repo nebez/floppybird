@@ -101,7 +101,7 @@ class Game {
     protected bird: Bird;
     protected land: Land;
     protected pipes: PipeManager;
-    protected state: GameState;
+    protected _state!: GameState;
     protected gameLoop: ReturnType<typeof setInterval> | undefined;
 
     constructor(domElements: GameHtmlElements) {
@@ -116,6 +116,15 @@ class Game {
         this.state = GameState.Loading;
 
         requestAnimationFrame(this.draw.bind(this));
+    }
+
+    protected set state(newState: GameState) {
+        log('Changing state', GameState[this._state], GameState[newState]);
+        this._state = newState;
+    }
+
+    protected get state() {
+        return this._state;
     }
 
     public onKeyboardEvent(ev: KeyboardEvent) {
@@ -133,10 +142,10 @@ class Game {
     }
 
     public onScreenTouch() {
-        if (this.state === GameState.SplashScreen) {
-            this.start();
-        } else if (this.state === GameState.Playing) {
+        if (this.state === GameState.Playing) {
             this.bird.jump();
+        } else if (this.state === GameState.SplashScreen) {
+            this.start();
         } else if (this.state === GameState.ScoreScreen) {
             this.reset();
         }
@@ -150,6 +159,7 @@ class Game {
     }
 
     public async reset() {
+        this.state = GameState.Loading;
         sounds.swoosh.play();
 
         const scoreboard = document.getElementById('scoreboard')!;
@@ -204,7 +214,6 @@ class Game {
 
         await wait(500);
 
-        this.state = GameState.ScoreScreen;
         sounds.swoosh.play();
 
         const scoreboard = document.getElementById('scoreboard')!;
@@ -216,6 +225,11 @@ class Game {
 
         const replay = document.getElementById('replay')!;
         replay.classList.add('visible');
+        // The above animation takes 600ms. But we don't need to wait the
+        // entirety of it to let them replay. Make it half.
+        await wait(300);
+
+        this.state = GameState.ScoreScreen;
     }
 
     protected tick() {
