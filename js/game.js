@@ -159,16 +159,17 @@ var Game = (function () {
         this.pipes = new PipeManager(domElements.flightArea);
         this.land = new Land(domElements.land);
         this.state = GameState.Loading;
+        this.domElements.replayButton.onclick = this.onReplayTouch.bind(this);
         requestAnimationFrame(this.draw.bind(this));
     }
-    Game.prototype.onScreenTouch = function () {
+    Game.prototype.onScreenTouch = function (ev) {
         if (this.state === GameState.Playing) {
             this.bird.jump();
         }
         else if (this.state === GameState.SplashScreen) {
             this.start();
         }
-        else if (this.state === GameState.ScoreScreen) {
+        else if (this.state === GameState.ScoreScreen && ev instanceof KeyboardEvent) {
             this.reset();
         }
     };
@@ -195,6 +196,11 @@ var Game = (function () {
         enumerable: false,
         configurable: true
     });
+    Game.prototype.onReplayTouch = function () {
+        if (this.state === GameState.ScoreScreen) {
+            this.reset();
+        }
+    };
     Game.prototype.reset = function () {
         return __awaiter(this, void 0, void 0, function () {
             var scoreboard, replay;
@@ -427,11 +433,12 @@ var PipeManager = (function () {
     var bird = document.getElementById('player');
     var land = document.getElementById('land');
     var flightArea = document.getElementById('flyarea');
-    if (bird == null || flightArea == null || land == null) {
+    var replayButton = document.getElementById('replay');
+    if (bird == null || flightArea == null || land == null || replayButton == null) {
         throw new Error('Missing an element');
     }
-    var game = new Game({ bird: bird, land: land, flightArea: flightArea });
-    document.onkeydown = function (ev) { ev.keyCode == 32 && game.onScreenTouch(); };
+    var game = new Game({ bird: bird, land: land, flightArea: flightArea, replayButton: replayButton });
+    document.onkeydown = function (ev) { ev.keyCode == 32 && game.onScreenTouch(ev); };
     if ('ontouchstart' in document) {
         document.ontouchstart = game.onScreenTouch.bind(game);
     }
