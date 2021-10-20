@@ -101,8 +101,9 @@ var isBoxIntersecting = function (a, b) {
 };
 var GameDebugger = (function () {
     function GameDebugger(enabled) {
-        this.domBoxes = new Map();
         this.domState = document.getElementById('debug-state');
+        this.domBoxContainer = document.getElementById('debug');
+        this.domBoxes = new Map();
         this.enabled = enabled;
     }
     GameDebugger.prototype.drawBox = function (key, box) {
@@ -112,8 +113,7 @@ var GameDebugger = (function () {
         if (!this.domBoxes.has(key)) {
             var newDebugBox = document.createElement('div');
             newDebugBox.className = 'boundingbox';
-            var debugContainer = document.getElementById('debug');
-            debugContainer.appendChild(newDebugBox);
+            this.domBoxContainer.appendChild(newDebugBox);
             this.domBoxes.set(key, newDebugBox);
         }
         var boudingBox = this.domBoxes.get(key);
@@ -161,17 +161,6 @@ var Game = (function () {
         this.state = GameState.Loading;
         requestAnimationFrame(this.draw.bind(this));
     }
-    Object.defineProperty(Game.prototype, "state", {
-        get: function () {
-            return this._state;
-        },
-        set: function (newState) {
-            gameDebugger.logStateChange(this._state, newState);
-            this._state = newState;
-        },
-        enumerable: false,
-        configurable: true
-    });
     Game.prototype.onScreenTouch = function () {
         if (this.state === GameState.Playing) {
             this.bird.jump();
@@ -195,6 +184,17 @@ var Game = (function () {
             });
         });
     };
+    Object.defineProperty(Game.prototype, "state", {
+        get: function () {
+            return this._state;
+        },
+        set: function (newState) {
+            gameDebugger.logStateChange(this._state, newState);
+            this._state = newState;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Game.prototype.reset = function () {
         return __awaiter(this, void 0, void 0, function () {
             var scoreboard, replay;
@@ -296,26 +296,6 @@ var Bird = (function () {
         this.rotation = 0;
         this.box = { x: 60, y: 180, width: 34, height: 24 };
     };
-    Bird.prototype.tick = function () {
-        this.velocity += this.flyingProperties.gravity;
-        this.rotation = Math.min((this.velocity / 10) * 90, 90);
-        this.position += this.velocity;
-        if (this.position < 0) {
-            this.position = 0;
-        }
-        if (this.position > this.flyingProperties.flightAreaBox.height) {
-            this.position = this.flyingProperties.flightAreaBox.height;
-        }
-        var rotationInRadians = Math.abs(toRad(this.rotation));
-        var widthMultiplier = this.height - this.width;
-        var heightMultiplier = this.width - this.height;
-        this.box.width = this.width + (widthMultiplier * Math.sin(rotationInRadians));
-        this.box.height = this.height + (heightMultiplier * Math.sin(rotationInRadians));
-        var xShift = (this.width - this.box.width) / 2;
-        var yShift = (this.height - this.box.height) / 2;
-        this.box.x = 60 + xShift;
-        this.box.y = this.position + yShift + this.flyingProperties.flightAreaBox.y;
-    };
     Bird.prototype.jump = function () {
         this.velocity = this.flyingProperties.jumpVelocity;
         sounds.jump.play();
@@ -341,6 +321,26 @@ var Bird = (function () {
                 }
             });
         });
+    };
+    Bird.prototype.tick = function () {
+        this.velocity += this.flyingProperties.gravity;
+        this.rotation = Math.min((this.velocity / 10) * 90, 90);
+        this.position += this.velocity;
+        if (this.position < 0) {
+            this.position = 0;
+        }
+        if (this.position > this.flyingProperties.flightAreaBox.height) {
+            this.position = this.flyingProperties.flightAreaBox.height;
+        }
+        var rotationInRadians = Math.abs(toRad(this.rotation));
+        var widthMultiplier = this.height - this.width;
+        var heightMultiplier = this.width - this.height;
+        this.box.width = this.width + (widthMultiplier * Math.sin(rotationInRadians));
+        this.box.height = this.height + (heightMultiplier * Math.sin(rotationInRadians));
+        var xShift = (this.width - this.box.width) / 2;
+        var yShift = (this.height - this.box.height) / 2;
+        this.box.x = 60 + xShift;
+        this.box.y = this.position + yShift + this.flyingProperties.flightAreaBox.y;
     };
     Bird.prototype.draw = function () {
         gameDebugger.drawBox(this.domElement, this.box);

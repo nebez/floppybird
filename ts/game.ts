@@ -39,9 +39,10 @@ const isBoxIntersecting = (a: BoundingBox, b: BoundingBox) => {
 }
 
 class GameDebugger {
-    protected domBoxes = new Map<HTMLElement, HTMLDivElement>();
     protected enabled;
     protected domState = document.getElementById('debug-state')!;
+    protected domBoxContainer = document.getElementById('debug')!;
+    protected domBoxes = new Map<HTMLElement, HTMLDivElement>();
 
     constructor(enabled: boolean) {
         this.enabled = enabled;
@@ -55,8 +56,7 @@ class GameDebugger {
         if (!this.domBoxes.has(key)) {
             const newDebugBox = document.createElement('div');
             newDebugBox.className = 'boundingbox';
-            const debugContainer = document.getElementById('debug');
-            debugContainer!.appendChild(newDebugBox);
+            this.domBoxContainer.appendChild(newDebugBox);
             this.domBoxes.set(key, newDebugBox);
         }
 
