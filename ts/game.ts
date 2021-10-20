@@ -78,7 +78,8 @@ class GameDebugger {
             return;
         }
 
-        // Only pipes need resetting. Land and bird are recycled.
+        // Only pipes need resetting. Land and bird are recycled. The debugger
+        // probably shouldn't be aware of this but who cares :)
         this.domBoxes.forEach((debugBox, pipe) => {
             if (pipe.className.includes('pipe')) {
                 debugBox.remove();
@@ -140,15 +141,6 @@ class Game {
         requestAnimationFrame(this.draw.bind(this));
     }
 
-    protected set state(newState: GameState) {
-        gameDebugger.logStateChange(this._state, newState);
-        this._state = newState;
-    }
-
-    protected get state() {
-        return this._state;
-    }
-
     public onScreenTouch() {
         if (this.state === GameState.Playing) {
             this.bird.jump();
@@ -166,7 +158,16 @@ class Game {
         this.state = GameState.SplashScreen;
     }
 
-    public async reset() {
+    protected get state() {
+        return this._state;
+    }
+
+    protected set state(newState: GameState) {
+        gameDebugger.logStateChange(this._state, newState);
+        this._state = newState;
+    }
+
+    protected async reset() {
         this.state = GameState.Loading;
         sounds.swoosh.play();
 
@@ -193,7 +194,7 @@ class Game {
         this.splash();
     }
 
-    public start() {
+    protected start() {
         const splashImage = document.getElementById('splash')!;
         splashImage.classList.remove('visible');
         this.state = GameState.Playing;
@@ -203,7 +204,7 @@ class Game {
         this.bird.jump();
     }
 
-    public async die() {
+    protected async die() {
         clearInterval(this.gameLoop);
 
         this.state = GameState.PlayerDying;
@@ -281,6 +282,25 @@ class Bird {
         this.box = { x: 60, y: 180, width: 34, height: 24 };
     }
 
+    public jump() {
+        this.velocity = this.flyingProperties.jumpVelocity;
+        sounds.jump.play();
+    }
+
+    public async die() {
+        this.domElement.style.transition = `
+            transform 1s cubic-bezier(0.65, 0, 0.35, 1)
+        `;
+        this.position = this.flyingProperties.flightAreaBox.height - this.height;
+        this.rotation = 90;
+
+        sounds.hit.play();
+        await wait(500);
+        sounds.die.play();
+        await wait(500);
+        this.domElement.style.transition = '';
+    }
+
     public tick() {
         this.velocity += this.flyingProperties.gravity;
         this.rotation = Math.min((this.velocity / 10) * 90, 90);
@@ -316,25 +336,6 @@ class Bird {
         // And we're our current bird position from the top + y shift + the
         // distance to the top of the window, because of the sky
         this.box.y = this.position + yShift + this.flyingProperties.flightAreaBox.y;
-    }
-
-    public jump() {
-        this.velocity = this.flyingProperties.jumpVelocity;
-        sounds.jump.play();
-    }
-
-    public async die() {
-        this.domElement.style.transition = `
-            transform 1s cubic-bezier(0.65, 0, 0.35, 1)
-        `;
-        this.position = this.flyingProperties.flightAreaBox.height - this.height;
-        this.rotation = 90;
-
-        sounds.hit.play();
-        await wait(500);
-        sounds.die.play();
-        await wait(500);
-        this.domElement.style.transition = '';
     }
 
     public draw() {
