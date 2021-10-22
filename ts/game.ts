@@ -94,7 +94,11 @@ class GameDebugger {
         this.domState.innerText = GameState[newState];
     }
 
-    public log (...args: any[]) {
+    public log(...args: any[]) {
+        if (!this.enabled) {
+            return;
+        }
+
         console.log(`[${Date.now()}]`, ...args);
         this.domLogs.innerText += `[${Date.now()}] ${args.map(a => a?.toString()).join(' ')}\n`;
     }

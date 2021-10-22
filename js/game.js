@@ -144,6 +144,9 @@ var GameDebugger = (function () {
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
+        if (!this.enabled) {
+            return;
+        }
         console.log.apply(console, __spreadArray(["[" + Date.now() + "]"], __read(args), false));
         this.domLogs.innerText += "[" + Date.now() + "] " + args.map(function (a) { return a === null || a === void 0 ? void 0 : a.toString(); }).join(' ') + "\n";
     };
