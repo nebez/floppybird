@@ -14,7 +14,7 @@
 }
 
 @keyframes animPipe {
-   0% { left: 900px; }
+   0% { left: 650px; }
    100% { left: -100px; }
 }
 
@@ -291,7 +291,12 @@ Screen - Game
    height: 100%;
    z-index: 10;
 
-   animation: animPipe 7500ms linear;
+   /* Originally, this was 7500. Coupled with the animPipe distance of
+   moving each pipe left 1000px over the duration of the animation, it
+   makes it quite easy to adjust these two values in tandem. For each
+   pixel you move the pipe, multiply the distance by 7.5 to get the
+   total required animation time. For a 750px animation, use 5625ms */
+   animation: animPipe 5625ms linear;
 }
 
 .pipe_upper

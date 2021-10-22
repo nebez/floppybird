@@ -383,17 +383,17 @@ class Pipe {
     protected upperBox: BoundingBox = { x: 0, y: 0, width: 0, height: 0 };
     protected lowerBox: BoundingBox = { x: 0, y: 0, width: 0, height: 0 };
 
-    constructor() {
+    constructor(options: { topPipeHeight: number, bottomPipeHeight: number }) {
         this.domElement = document.createElement('div');
         this.domElement.className = 'pipe animated';
 
         this.upperPipeDomElement = document.createElement('div');
         this.upperPipeDomElement.className = 'pipe_upper';
-        this.upperPipeDomElement.style.height = '165px';
+        this.upperPipeDomElement.style.height = `${options.topPipeHeight}px`;
 
         this.lowerPipeDomElement = document.createElement('div');
         this.lowerPipeDomElement.className = 'pipe_lower';
-        this.lowerPipeDomElement.style.height = '165px';
+        this.lowerPipeDomElement.style.height = `${options.bottomPipeHeight}px`;
 
         this.domElement.appendChild(this.upperPipeDomElement);
         this.domElement.appendChild(this.lowerPipeDomElement);
@@ -439,7 +439,8 @@ class PipeManager {
         // entirely off the screen
         log('inserting pipe after', now - this.lastPipeInsertedTimestamp, 'ms');
         this.lastPipeInsertedTimestamp = now;
-        const pipe = new Pipe();
+        const pipeDimension = this.createPipeDimensions({ gap: 90, minDistanceFromEdges: 80 });
+        const pipe = new Pipe(pipeDimension);
         this.pipes.push(pipe);
         this.pipeAreaDomElement.appendChild(pipe.domElement);
 
@@ -461,6 +462,28 @@ class PipeManager {
     public removeAll() {
         this.pipes.forEach(pipe => pipe.domElement.remove());
         this.pipes = [];
+    }
+
+    protected createPipeDimensions(options: { gap: number, minDistanceFromEdges: number }) {
+        // The gap between pipes should be 90px. And the positioning of them
+        // should be somewhere randomly within the flight area with sufficient
+        // buffer from the top of bottom. Our entire "flight" area is 420px.
+        // The pipes should be at *least* 80px high, which means they can be
+        // at most:
+        //     FlightHeight - PipeGap - PipeMinHeight = PipeMaxHeight
+        //     420 - 90 - 80 = 250px
+        // So if we pick a top pipe size of 80, then the bottom is 250 (and
+        // vice versa). Another way of expressing this same thing would be:
+        //     FlightHeight - PipeGap - TopPipeHeight = BottomPipeHeight
+        //     420 - 90 - 80 = 250px
+        const topPipeHeight = this.randomNumberBetween(80, 250);
+        const bottomPipeHeight = 420 - options.gap - topPipeHeight;
+        return { topPipeHeight, bottomPipeHeight };
+    }
+
+    protected randomNumberBetween(min: number, max: number) {
+        // Generate a random integer between min (inclusive) and max (inclusive).
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 }
 

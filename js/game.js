@@ -366,17 +366,17 @@ var Land = (function () {
     return Land;
 }());
 var Pipe = (function () {
-    function Pipe() {
+    function Pipe(options) {
         this.upperBox = { x: 0, y: 0, width: 0, height: 0 };
         this.lowerBox = { x: 0, y: 0, width: 0, height: 0 };
         this.domElement = document.createElement('div');
         this.domElement.className = 'pipe animated';
         this.upperPipeDomElement = document.createElement('div');
         this.upperPipeDomElement.className = 'pipe_upper';
-        this.upperPipeDomElement.style.height = '165px';
+        this.upperPipeDomElement.style.height = options.topPipeHeight + "px";
         this.lowerPipeDomElement = document.createElement('div');
         this.lowerPipeDomElement.className = 'pipe_lower';
-        this.lowerPipeDomElement.style.height = '165px';
+        this.lowerPipeDomElement.style.height = options.bottomPipeHeight + "px";
         this.domElement.appendChild(this.upperPipeDomElement);
         this.domElement.appendChild(this.lowerPipeDomElement);
     }
@@ -408,7 +408,8 @@ var PipeManager = (function () {
         }
         log('inserting pipe after', now - this.lastPipeInsertedTimestamp, 'ms');
         this.lastPipeInsertedTimestamp = now;
-        var pipe = new Pipe();
+        var pipeDimension = this.createPipeDimensions({ gap: 90, minDistanceFromEdges: 80 });
+        var pipe = new Pipe(pipeDimension);
         this.pipes.push(pipe);
         this.pipeAreaDomElement.appendChild(pipe.domElement);
         this.pipes = this.pipes.filter(function (pipe) {
@@ -426,6 +427,14 @@ var PipeManager = (function () {
     PipeManager.prototype.removeAll = function () {
         this.pipes.forEach(function (pipe) { return pipe.domElement.remove(); });
         this.pipes = [];
+    };
+    PipeManager.prototype.createPipeDimensions = function (options) {
+        var topPipeHeight = this.randomNumberBetween(80, 250);
+        var bottomPipeHeight = 420 - options.gap - topPipeHeight;
+        return { topPipeHeight: topPipeHeight, bottomPipeHeight: bottomPipeHeight };
+    };
+    PipeManager.prototype.randomNumberBetween = function (min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     };
     return PipeManager;
 }());
