@@ -257,6 +257,18 @@ Screen - Game
    top: 5px;
    left: 5px;
    font-size: 14px;
+   background: rgba(0, 0, 0, 0.35);
+   z-index: 99;
+}
+
+#debug-logs
+{
+   position: absolute;
+   bottom: 0px;
+   left: 700px;
+   white-space: pre;
+   background: rgba(0, 0, 0, 0.35);
+   z-index: 99;
 }
 
 .boundingbox

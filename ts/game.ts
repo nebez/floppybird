@@ -21,10 +21,6 @@ const wait = async (time: number) => {
     })
 }
 
-const log = (...args: any[]) => {
-    console.log(`[${Date.now()}]`, ...args);
-}
-
 const toRad = (degrees: number) => {
     return degrees * Math.PI / 180;
 }
@@ -40,6 +36,7 @@ const isBoxIntersecting = (a: BoundingBox, b: BoundingBox) => {
 
 class GameDebugger {
     protected enabled;
+    protected domLogs = document.getElementById('debug-logs')!;
     protected domState = document.getElementById('debug-state')!;
     protected domBoxContainer = document.getElementById('debug')!;
     protected domBoxes = new Map<HTMLElement, HTMLDivElement>();
@@ -63,7 +60,7 @@ class GameDebugger {
         const boudingBox = this.domBoxes.get(key);
 
         if (boudingBox == null) {
-            log(`couldn't create a debug box for ${key}`);
+            this.log(`couldn't create a debug box for ${key}`);
             return;
         }
 
@@ -93,8 +90,13 @@ class GameDebugger {
             return;
         }
 
-        log('Changing state', GameState[oldState], GameState[newState]);
+        this.log('Changing state', GameState[oldState], GameState[newState]);
         this.domState.innerText = GameState[newState];
+    }
+
+    public log (...args: any[]) {
+        console.log(`[${Date.now()}]`, ...args);
+        this.domLogs.innerText += `[${Date.now()}] ${args.map(a => a?.toString()).join(' ')}\n`;
     }
 }
 
@@ -437,7 +439,7 @@ class PipeManager {
 
         // Insert a new pipe and then prune all the pipes that have gone
         // entirely off the screen
-        log('inserting pipe after', now - this.lastPipeInsertedTimestamp, 'ms');
+        gameDebugger.log('inserting pipe after', now - this.lastPipeInsertedTimestamp, 'ms');
         this.lastPipeInsertedTimestamp = now;
         const pipeDimension = this.createPipeDimensions({ gap: 90, minDistanceFromEdges: 80 });
         const pipe = new Pipe(pipeDimension);
@@ -446,7 +448,7 @@ class PipeManager {
 
         this.pipes = this.pipes.filter(pipe => {
             if (pipe.isOffScreen()) {
-                log('pruning a pipe');
+                gameDebugger.log('pruning a pipe');
                 pipe.domElement.remove();
                 return false;
             }

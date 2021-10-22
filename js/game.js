@@ -83,13 +83,6 @@ var wait = function (time) { return __awaiter(void 0, void 0, void 0, function (
             })];
     });
 }); };
-var log = function () {
-    var args = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        args[_i] = arguments[_i];
-    }
-    console.log.apply(console, __spreadArray(["[" + Date.now() + "]"], __read(args), false));
-};
 var toRad = function (degrees) {
     return degrees * Math.PI / 180;
 };
@@ -101,6 +94,7 @@ var isBoxIntersecting = function (a, b) {
 };
 var GameDebugger = (function () {
     function GameDebugger(enabled) {
+        this.domLogs = document.getElementById('debug-logs');
         this.domState = document.getElementById('debug-state');
         this.domBoxContainer = document.getElementById('debug');
         this.domBoxes = new Map();
@@ -118,7 +112,7 @@ var GameDebugger = (function () {
         }
         var boudingBox = this.domBoxes.get(key);
         if (boudingBox == null) {
-            log("couldn't create a debug box for " + key);
+            this.log("couldn't create a debug box for " + key);
             return;
         }
         boudingBox.style.top = box.y + "px";
@@ -142,8 +136,16 @@ var GameDebugger = (function () {
         if (!this.enabled) {
             return;
         }
-        log('Changing state', GameState[oldState], GameState[newState]);
+        this.log('Changing state', GameState[oldState], GameState[newState]);
         this.domState.innerText = GameState[newState];
+    };
+    GameDebugger.prototype.log = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        console.log.apply(console, __spreadArray(["[" + Date.now() + "]"], __read(args), false));
+        this.domLogs.innerText += "[" + Date.now() + "] " + args.map(function (a) { return a === null || a === void 0 ? void 0 : a.toString(); }).join(' ') + "\n";
     };
     return GameDebugger;
 }());
@@ -406,7 +408,7 @@ var PipeManager = (function () {
         if (now - this.lastPipeInsertedTimestamp < this.pipeDelay) {
             return;
         }
-        log('inserting pipe after', now - this.lastPipeInsertedTimestamp, 'ms');
+        gameDebugger.log('inserting pipe after', now - this.lastPipeInsertedTimestamp, 'ms');
         this.lastPipeInsertedTimestamp = now;
         var pipeDimension = this.createPipeDimensions({ gap: 90, minDistanceFromEdges: 80 });
         var pipe = new Pipe(pipeDimension);
@@ -414,7 +416,7 @@ var PipeManager = (function () {
         this.pipeAreaDomElement.appendChild(pipe.domElement);
         this.pipes = this.pipes.filter(function (pipe) {
             if (pipe.isOffScreen()) {
-                log('pruning a pipe');
+                gameDebugger.log('pruning a pipe');
                 pipe.domElement.remove();
                 return false;
             }
