@@ -210,16 +210,10 @@ var Game = (function () {
             return this._currentScore;
         },
         set: function (newScore) {
+            var _a, _b;
             this._currentScore = newScore;
-            [this.domElements.bigScore, this.domElements.currentScore].forEach(function (e) {
-                var digits = newScore.toString().split('').map(function (n) {
-                    var imgDigit = new Image();
-                    var size = e.id.includes('big') ? 'big' : 'small';
-                    imgDigit.src = "assets/font_" + size + "_" + n + ".png";
-                    return imgDigit;
-                });
-                e.replaceChildren.apply(e, __spreadArray([], __read(digits), false));
-            });
+            (_a = this.domElements.bigScore).replaceChildren.apply(_a, __spreadArray([], __read(this.numberToImageElements(newScore, 'big')), false));
+            (_b = this.domElements.currentScore).replaceChildren.apply(_b, __spreadArray([], __read(this.numberToImageElements(newScore, 'small')), false));
         },
         enumerable: false,
         configurable: true
@@ -231,12 +225,7 @@ var Game = (function () {
         set: function (newScore) {
             var _a;
             this._highScore = newScore;
-            var digits = newScore.toString().split('').map(function (n) {
-                var imgDigit = new Image();
-                imgDigit.src = "assets/font_small_" + n + ".png";
-                return imgDigit;
-            });
-            (_a = this.domElements.highScore).replaceChildren.apply(_a, __spreadArray([], __read(digits), false));
+            (_a = this.domElements.highScore).replaceChildren.apply(_a, __spreadArray([], __read(this.numberToImageElements(newScore, 'small')), false));
         },
         enumerable: false,
         configurable: true
@@ -328,6 +317,13 @@ var Game = (function () {
             gameDebugger.log('New highscore!', this.currentScore);
             this.highScore = this.currentScore;
         }
+    };
+    Game.prototype.numberToImageElements = function (digits, size) {
+        return digits.toString().split('').map(function (n) {
+            var imgDigit = new Image();
+            imgDigit.src = "assets/font_" + size + "_" + n + ".png";
+            return imgDigit;
+        });
     };
     Game.prototype.tick = function () {
         var now = Date.now();

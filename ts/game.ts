@@ -198,15 +198,8 @@ class Game {
 
     protected set currentScore(newScore: number) {
         this._currentScore = newScore;
-        [this.domElements.bigScore, this.domElements.currentScore].forEach(e => {
-            const digits = newScore.toString().split('').map(n => {
-                const imgDigit = new Image();
-                const size = e.id.includes('big') ? 'big' : 'small';
-                imgDigit.src = `assets/font_${size}_${n}.png`
-                return imgDigit;
-            });
-            e.replaceChildren(...digits);
-        });
+        this.domElements.bigScore.replaceChildren(...this.numberToImageElements(newScore, 'big'));
+        this.domElements.currentScore.replaceChildren(...this.numberToImageElements(newScore, 'small'));
     }
 
     protected get highScore() {
@@ -215,14 +208,7 @@ class Game {
 
     protected set highScore(newScore: number) {
         this._highScore = newScore;
-
-        const digits = newScore.toString().split('').map(n => {
-            const imgDigit = new Image();
-            imgDigit.src = `assets/font_small_${n}.png`
-            return imgDigit;
-        });
-
-        this.domElements.highScore.replaceChildren(...digits);
+        this.domElements.highScore.replaceChildren(...this.numberToImageElements(newScore, 'small'));
     }
 
     protected onReplayTouch() {
@@ -315,6 +301,14 @@ class Game {
         this.highScore = this.currentScore;
         }
 
+    }
+
+    protected numberToImageElements(digits: number, size: 'big' | 'small') {
+        return digits.toString().split('').map(n => {
+            const imgDigit = new Image();
+            imgDigit.src = `assets/font_${size}_${n}.png`
+            return imgDigit;
+        });
     }
 
     protected tick() {
