@@ -99,8 +99,13 @@ class GameDebugger {
             return;
         }
 
-        console.log(`[${Date.now()}]`, ...args);
-        this.domLogs.innerText += `[${Date.now()}] ${args.map(a => a?.toString()).join(' ')}\n`;
+        // Current time is only really useful to see difference in ms between
+        // events - we don't need to see ms elapsed since epoch. The rest of
+        // the slice and "00000" garbage is so we get a consistent width.
+        const shortTime = ("00000" + Date.now() % 100000).slice(-5);
+
+        console.log(`[${shortTime}]`, ...args);
+        this.domLogs.innerText += `[${shortTime}] ${args.map(a => a?.toString()).join(' ')}\n`;
     }
 }
 
@@ -124,6 +129,9 @@ interface GameHtmlElements {
     land: HTMLElement;
     flightArea: HTMLElement;
     replayButton: HTMLElement;
+    bigScore: HTMLElement;
+    currentScore: HTMLElement;
+    highScore: HTMLElement;
 }
 
 class Game {
@@ -132,6 +140,8 @@ class Game {
     protected land: Land;
     protected pipes: PipeManager;
     protected _state!: GameState;
+    protected _highScore!: number;
+    protected _currentScore!: number;
     protected gameLoop: ReturnType<typeof setInterval> | undefined;
 
     constructor(domElements: GameHtmlElements) {
@@ -145,6 +155,8 @@ class Game {
         this.land = new Land(domElements.land);
         this.state = GameState.Loading;
         this.domElements.replayButton.onclick = this.onReplayTouch.bind(this);
+        this.highScore = 0;
+        this.currentScore = 0;
 
         requestAnimationFrame(this.draw.bind(this));
     }
@@ -176,7 +188,41 @@ class Game {
 
     protected set state(newState: GameState) {
         gameDebugger.logStateChange(this._state, newState);
+        document.body.className = `state-${GameState[newState]}`;
         this._state = newState;
+    }
+
+    protected get currentScore() {
+        return this._currentScore;
+    }
+
+    protected set currentScore(newScore: number) {
+        this._currentScore = newScore;
+        [this.domElements.bigScore, this.domElements.currentScore].forEach(e => {
+            const digits = newScore.toString().split('').map(n => {
+                const imgDigit = new Image();
+                const size = e.id.includes('big') ? 'big' : 'small';
+                imgDigit.src = `assets/font_${size}_${n}.png`
+                return imgDigit;
+            });
+            e.replaceChildren(...digits);
+        });
+    }
+
+    protected get highScore() {
+        return this._highScore;
+    }
+
+    protected set highScore(newScore: number) {
+        this._highScore = newScore;
+
+        const digits = newScore.toString().split('').map(n => {
+            const imgDigit = new Image();
+            imgDigit.src = `assets/font_small_${n}.png`
+            return imgDigit;
+        });
+
+        this.domElements.highScore.replaceChildren(...digits);
     }
 
     protected onReplayTouch() {
@@ -202,6 +248,7 @@ class Game {
 
         this.pipes.removeAll();
         this.bird.reset();
+        this.currentScore = 0;
 
         // Find everything that's animated and start it.
         Array.from(document.getElementsByClassName('animated')).forEach(e => {
@@ -257,11 +304,31 @@ class Game {
         this.state = GameState.ScoreScreen;
     }
 
+    protected score() {
+        gameDebugger.log('Score!');
+        sounds.score.play();
+
+        this.currentScore++;
+
+        if (this.currentScore > this.highScore) {
+        gameDebugger.log('New highscore!', this.currentScore);
+        this.highScore = this.currentScore;
+        }
+
+    }
+
     protected tick() {
         const now = Date.now();
 
         this.bird.tick();
         this.pipes.tick(now);
+
+        let unscoredPipe = this.pipes.nextUnscoredPipe();
+
+        if (unscoredPipe && unscoredPipe.hasCrossed(this.bird.box)) {
+            unscoredPipe.scored = true;
+            this.score();
+        }
 
         if (this.pipes.intersectsWith(this.bird.box) || this.land.intersectsWith(this.bird.box)) {
             this.die();
@@ -383,6 +450,7 @@ class Land {
 }
 
 class Pipe {
+    public scored = false;
     public domElement: HTMLDivElement;
     protected upperPipeDomElement: HTMLDivElement;
     protected lowerPipeDomElement: HTMLDivElement;
@@ -409,6 +477,19 @@ class Pipe {
         return this.upperBox.x <= -100;
     }
 
+    public hasCrossed(box: BoundingBox) {
+        // Little bug with attempting to understand if we've crossed something
+        // before we've actually rendered. We can fix one of two ways: wait to
+        // render (setImmediate, or wait another ticket), or check for width.
+        // First option sounds like it would fix other bugs that are probably
+        // lingering but no thanks.
+        return this.upperBox.width !== 0 && this.upperBox.x + this.upperBox.width <= box.x;
+    }
+
+    public intersectsWith(box: BoundingBox) {
+        return isBoxIntersecting(this.upperBox, box) || isBoxIntersecting(this.lowerBox, box);
+    }
+
     public tick() {
         this.upperBox = this.upperPipeDomElement.getBoundingClientRect();
         this.lowerBox = this.lowerPipeDomElement.getBoundingClientRect();
@@ -416,10 +497,6 @@ class Pipe {
         // TODO: This should be in draw not tick. Find a way to move it after.
         gameDebugger.drawBox(this.upperPipeDomElement, this.upperBox);
         gameDebugger.drawBox(this.lowerPipeDomElement, this.lowerBox);
-    }
-
-    public intersectsWith(box: BoundingBox) {
-        return isBoxIntersecting(this.upperBox, box) || isBoxIntersecting(this.lowerBox, box);
     }
 }
 
@@ -470,6 +547,10 @@ class PipeManager {
         this.pipes = [];
     }
 
+    public nextUnscoredPipe() {
+        return this.pipes.find(pipe => pipe.scored === false);
+    }
+
     protected createPipeDimensions(options: { gap: number, minDistanceFromEdges: number }) {
         // The gap between pipes should be 90px. And the positioning of them
         // should be somewhere randomly within the flight area with sufficient
@@ -498,12 +579,15 @@ class PipeManager {
     const land = document.getElementById('land');
     const flightArea = document.getElementById('flyarea');
     const replayButton = document.getElementById('replay');
+    const bigScore = document.getElementById('bigscore');
+    const currentScore = document.getElementById('currentscore');
+    const highScore = document.getElementById('highscore');
 
-    if (bird == null || flightArea == null || land == null || replayButton == null) {
+    if (bird == null || flightArea == null || land == null || replayButton == null || bigScore == null || currentScore == null || highScore == null) {
         throw new Error('Missing an element');
     }
 
-    const game = new Game({ bird, land, flightArea, replayButton });
+    const game = new Game({ bird, land, flightArea, replayButton, bigScore, currentScore, highScore });
 
     // They can use both the spacebar or screen taps to interact with the game
     document.onkeydown = (ev: KeyboardEvent) => { ev.keyCode == 32 && game.onScreenTouch(ev); }

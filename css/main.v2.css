@@ -118,8 +118,15 @@ Screen - Game
    animation: animLand 2516ms linear infinite;
 }
 
+.state-Playing #bigscore,
+.state-PlayerDying #bigscore
+{
+   visibility: visible;
+}
+
 #bigscore
 {
+   visibility: hidden;
    position: absolute;
    top: 20px;
    left: 150px;
