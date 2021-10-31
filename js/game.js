@@ -154,6 +154,36 @@ var GameDebugger = (function () {
     return GameDebugger;
 }());
 var gameDebugger = new GameDebugger(true);
+var gameStorage = new (function () {
+    function class_1() {
+        this.isLsEnabled = false;
+        this.isLsEnabled = this.testLocalStorageWorks();
+    }
+    class_1.prototype.testLocalStorageWorks = function () {
+        try {
+            window.localStorage.setItem('test', 'test');
+            window.localStorage.removeItem('test');
+            return true;
+        }
+        catch (_a) {
+            return false;
+        }
+    };
+    class_1.prototype.setHighScore = function (score) {
+        if (!this.isLsEnabled) {
+            return;
+        }
+        window.localStorage.setItem('highscore', score.toString());
+    };
+    class_1.prototype.getHighScore = function () {
+        var _a;
+        if (!this.isLsEnabled) {
+            return 0;
+        }
+        return parseInt((_a = window.localStorage.getItem('highscore')) !== null && _a !== void 0 ? _a : '0');
+    };
+    return class_1;
+}());
 var Game = (function () {
     function Game(domElements) {
         this.domElements = domElements;
@@ -166,7 +196,7 @@ var Game = (function () {
         this.land = new Land(domElements.land);
         this.state = GameState.Loading;
         this.domElements.replayButton.onclick = this.onReplayTouch.bind(this);
-        this.highScore = 0;
+        this.highScore = gameStorage.getHighScore();
         this.currentScore = 0;
         requestAnimationFrame(this.draw.bind(this));
     }
@@ -226,6 +256,7 @@ var Game = (function () {
             var _a;
             this._highScore = newScore;
             (_a = this.domElements.highScore).replaceChildren.apply(_a, __spreadArray([], __read(this.numberToImageElements(newScore, 'small')), false));
+            gameStorage.setHighScore(newScore);
         },
         enumerable: false,
         configurable: true

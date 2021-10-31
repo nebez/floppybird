@@ -134,6 +134,40 @@ interface GameHtmlElements {
     highScore: HTMLElement;
 }
 
+const gameStorage = new class {
+    protected isLsEnabled = false;
+
+    constructor() {
+        this.isLsEnabled = this.testLocalStorageWorks();
+    }
+
+    protected testLocalStorageWorks() {
+        try {
+            window.localStorage.setItem('test', 'test');
+            window.localStorage.removeItem('test');
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    public setHighScore(score: number) {
+        if (!this.isLsEnabled) {
+            return;
+        }
+
+        window.localStorage.setItem('highscore', score.toString());
+    }
+
+    public getHighScore() {
+        if (!this.isLsEnabled) {
+            return 0;
+        }
+
+        return parseInt(window.localStorage.getItem('highscore') ?? '0');
+    }
+}
+
 class Game {
     protected domElements: GameHtmlElements;
     protected bird: Bird;
@@ -155,7 +189,7 @@ class Game {
         this.land = new Land(domElements.land);
         this.state = GameState.Loading;
         this.domElements.replayButton.onclick = this.onReplayTouch.bind(this);
-        this.highScore = 0;
+        this.highScore = gameStorage.getHighScore();
         this.currentScore = 0;
 
         requestAnimationFrame(this.draw.bind(this));
@@ -209,6 +243,7 @@ class Game {
     protected set highScore(newScore: number) {
         this._highScore = newScore;
         this.domElements.highScore.replaceChildren(...this.numberToImageElements(newScore, 'small'));
+        gameStorage.setHighScore(newScore);
     }
 
     protected onReplayTouch() {
