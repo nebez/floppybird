@@ -1,6 +1,6 @@
 <img src="screencap.png" align="right" width="250">
 
-# [play floppy bird](https://nebez.github.io/floppybird/)
+# [play floppy bird](https://nebezb.com/floppybird/)
 
 If you missed the Flappy Bird hype, here's your chance to try the best vintage knockoff.
 
@@ -9,11 +9,11 @@ If you missed the Flappy Bird hype, here's your chance to try the best vintage k
 * 🎉 good ol' div's for all the objects and graphics,
 * 🖥 scales perfectly on almost any screen, both mobile and desktop,
 * 💩 unoptimized, laggy, and not nearly as fast as a canvas implementation,
-* 👷‍♂️ unfinished typescript version (see `/ts` folder),
+* 👷‍♂️ a typescript version that does almost nothing better over at [ts-floppybird](https://github.com/nebez/ts-floppybird)!
 
 Enjoy.
 
-https://nebez.github.io/floppybird/ (or play [**easy mode**](https://nebez.github.io/floppybird/?easy))
+https://nebezb.com/floppybird/ (or play [**easy mode**](https://nebezb.com/floppybird/?easy))
 
 ### Clones
 
