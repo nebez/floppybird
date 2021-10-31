@@ -169,14 +169,22 @@ const gameStorage = new class {
 }
 
 class Game {
+    protected _state!: GameState;
+    protected _highScore!: number;
+    protected _currentScore!: number;
+
     protected domElements: GameHtmlElements;
     protected bird: Bird;
     protected land: Land;
     protected pipes: PipeManager;
-    protected _state!: GameState;
-    protected _highScore!: number;
-    protected _currentScore!: number;
     protected gameLoop: ReturnType<typeof setInterval> | undefined;
+
+    protected medals = [
+        [40, 'platinum'],
+        [30, 'gold'],
+        [20, 'silver'],
+        [10, 'bronze'],
+    ] as const;
 
     constructor(domElements: GameHtmlElements) {
         this.domElements = domElements;
@@ -261,9 +269,8 @@ class Game {
         // The above animation takes 600ms, but let's add a bit more delay
         await wait(750);
 
-        const replay = document.getElementById('replay')!;
-        replay.classList.remove('visible');
         scoreboard.classList.remove('visible', 'slide-up');
+        Array.from(scoreboard.getElementsByClassName('visible')).forEach(e => e.classList.remove('visible'));
 
         gameDebugger.resetBoxes();
 
@@ -318,8 +325,20 @@ class Game {
 
         const replay = document.getElementById('replay')!;
         replay.classList.add('visible');
-        // The above animation takes 600ms. But we don't need to wait the
-        // entirety of it to let them replay. Make it half.
+
+        const wonMedal = this.medals.find(([minimumScore]) => this.currentScore >= minimumScore);
+
+        if (wonMedal) {
+            gameDebugger.log('Medal won!', wonMedal);
+            const medalContainer = document.getElementById('medal')!;
+            const medal = new Image();
+            medal.src = `assets/medal_${wonMedal[1]}.png`;
+            medalContainer.replaceChildren(medal);
+            medalContainer.classList.add('visible');
+        }
+
+        // The above animations takes nearly 1200ms. But we don't need to wait
+        // the entirety of it to let them replay if they're in a fit of rage.
         await wait(300);
 
         this.state = GameState.ScoreScreen;

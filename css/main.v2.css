@@ -198,6 +198,13 @@ Screen - Game
    left: 32px;
    width: 44px;
    height: 44px;
+   transform: scale(2);
+   transition: all 1200ms ease;
+}
+
+#medal.visible {
+   opacity: 1;
+   transform: scale(1);
 }
 
 #currentscore

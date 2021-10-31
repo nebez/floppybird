@@ -186,6 +186,12 @@ var gameStorage = new (function () {
 }());
 var Game = (function () {
     function Game(domElements) {
+        this.medals = [
+            [40, 'platinum'],
+            [30, 'gold'],
+            [20, 'silver'],
+            [10, 'bronze'],
+        ];
         this.domElements = domElements;
         this.bird = new Bird(domElements.bird, {
             gravity: 0.25,
@@ -268,7 +274,7 @@ var Game = (function () {
     };
     Game.prototype.reset = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var scoreboard, replay;
+            var scoreboard;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -279,9 +285,8 @@ var Game = (function () {
                         return [4, wait(750)];
                     case 1:
                         _a.sent();
-                        replay = document.getElementById('replay');
-                        replay.classList.remove('visible');
                         scoreboard.classList.remove('visible', 'slide-up');
+                        Array.from(scoreboard.getElementsByClassName('visible')).forEach(function (e) { return e.classList.remove('visible'); });
                         gameDebugger.resetBoxes();
                         this.pipes.removeAll();
                         this.bird.reset();
@@ -305,7 +310,8 @@ var Game = (function () {
     };
     Game.prototype.die = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var scoreboard, replay;
+            var scoreboard, replay, wonMedal, medalContainer, medal;
+            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -331,6 +337,18 @@ var Game = (function () {
                         sounds.swoosh.play();
                         replay = document.getElementById('replay');
                         replay.classList.add('visible');
+                        wonMedal = this.medals.find(function (_a) {
+                            var _b = __read(_a, 1), minimumScore = _b[0];
+                            return _this.currentScore >= minimumScore;
+                        });
+                        if (wonMedal) {
+                            gameDebugger.log('Medal won!', wonMedal);
+                            medalContainer = document.getElementById('medal');
+                            medal = new Image();
+                            medal.src = "assets/medal_" + wonMedal[1] + ".png";
+                            medalContainer.replaceChildren(medal);
+                            medalContainer.classList.add('visible');
+                        }
                         return [4, wait(300)];
                     case 4:
                         _a.sent();
