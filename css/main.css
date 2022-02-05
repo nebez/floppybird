@@ -294,7 +294,7 @@ Screen - Game
 .bird
 {
    position: absolute;
-   width: 34px;
+   width: 68px;
    height: 24px;
    background-image: url('../assets/bird.png');
 
@@ -319,7 +319,7 @@ Screen - Game
    position: absolute;
    top: 0;
    width: 52px;
-   background-image: url('../assets/pipe.png');
+   background-image: url('../assets/pipe_upper.png');
    background-repeat: repeat-y;
    background-position: center;
 }
@@ -339,7 +339,7 @@ Screen - Game
    position: absolute;
    bottom: 0;
    width: 52px;
-   background-image: url('../assets/pipe.png');
+   background-image: url('../assets/pipe_lower.png');
    background-repeat: repeat-y;
    background-position: center;
 }
@@ -348,7 +348,7 @@ Screen - Game
 {
    content: "";
    position: absolute;
-   top: 0;
+   top: -26px;
    width: 52px;
    height: 26px;
    background-image: url('../assets/pipe-up.png');
