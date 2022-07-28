@@ -37,6 +37,8 @@ https://nebezb.com/floppybird/ (or play [**easy mode**](https://nebezb.com/flopp
     * **[@mdibaiee/flappy-es](https://github.com/mdibaiee/flappy-es)** brings skynet to floppy bird
 * https://emu.edu/gaming-hub/flappy-huxman-game/
     * university celebrates 100 years by putting President Susan Huxman on a floppy bird body
+* https://www.docker.com/blog/creating-the-kubecon-flappy-dock-extension/
+    *  a Docker-themed fork that was turned into a Docker Extension for KubeCon EU 2022 ([source available here](https://github.com/mikesir87/floppybird))
 
 ### Notice
 
